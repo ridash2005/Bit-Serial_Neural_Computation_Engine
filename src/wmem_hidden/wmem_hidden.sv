@@ -8,36 +8,33 @@ module wmem_hidden #(
     input  logic clk,
     input  logic rst_n,
 
-    // -------------------------------------------------
+
     // Write port (from host / loader)
-    // -------------------------------------------------
+
     input  logic                           w_wr_en,
     input  logic [$clog2((N_HIDDEN>1)?N_HIDDEN:2)-1:0] w_addr_h,
     input  logic [$clog2((N_IN>1)?N_IN:2)-1:0]         w_addr_i,
     input  logic signed [DATA_W-1:0]                  w_data,
 
-    // -------------------------------------------------
+
     // Read port (from MAC engine)
-    // -------------------------------------------------
+
     input  logic [$clog2(((N_HIDDEN*N_IN)>1)?(N_HIDDEN*N_IN):2)-1:0] raddr,
     output logic signed [DATA_W-1:0]                                 rdata
 );
 
-    // ------------------------------------------------------------------
+
     // Local parameters
-    // ------------------------------------------------------------------
     localparam int WMEM_SIZE   = N_HIDDEN * N_IN;
     localparam int WMEM_ADDR_W = $clog2((WMEM_SIZE>1)?WMEM_SIZE:2);
 
-    // ------------------------------------------------------------------
+
     // Weight storage (BRAM)
-    // ------------------------------------------------------------------
     (* ram_style = "block" *)
     logic signed [DATA_W-1:0] mem [0:WMEM_SIZE-1];
 
-    // ------------------------------------------------------------------
+
     // Write data pipeline (Correctly Aligned)
-    // ------------------------------------------------------------------
     logic signed [DATA_W-1:0] w_data_reg;
     logic [WMEM_ADDR_W-1:0]   w_addr_reg;
     logic                     w_en_reg;
@@ -54,9 +51,8 @@ module wmem_hidden #(
         end
     end
 
-   // ------------------------------------------------------------------
+
     // BRAM Port
-    // ------------------------------------------------------------------
     always_ff @(posedge clk) begin
         if (!rst_n) begin
             rdata <= '0;
@@ -69,9 +65,8 @@ module wmem_hidden #(
     end
 
 `ifndef SYNTHESIS
-    // ------------------------------------------------------------------
+ 
     // Simulation-only safety checks
-    // ------------------------------------------------------------------
     // Address bounds checking
     always_ff @(posedge clk) begin
         if (w_wr_en) begin

@@ -2,20 +2,17 @@
 
 module mac_engine_tb;
 
-    // ---------------------------------------------------------
+
     // 1. Configuration & Parameters
-    // ---------------------------------------------------------
-    // Reduced sizes for readable console logs.
-    // Logic remains valid for larger N_IN/N_HIDDEN.
     parameter int DATA_W    = 16;
     parameter int PRECISION = DATA_W;
-    parameter int N_IN      = 2;  // Small number to easily track in console
-    parameter int N_HIDDEN  = 8;  // Small number to easily track in console
-    parameter int P         = 3;  // Parallelism (set to 1 for easiest debugging, or 4)
+    parameter int N_IN      = 2;  
+    parameter int N_HIDDEN  = 8; 
+    parameter int P         = 3;  
 
-    // ---------------------------------------------------------
+    
     // 2. Signal Declarations
-    // ---------------------------------------------------------
+
     logic clk;
     logic rst_n;
     logic start_compute;
@@ -33,9 +30,8 @@ module mac_engine_tb;
     logic signed [DATA_W-1:0] weights_mem [int];
     logic signed [(2*DATA_W)+$clog2(N_IN)-1:0] expected_results [N_HIDDEN];
 
-    // ---------------------------------------------------------
+
     // 3. DUT Instantiation
-    // ---------------------------------------------------------
     mac_engine #(
         .DATA_W(DATA_W),
         .PRECISION(PRECISION),
@@ -54,9 +50,9 @@ module mac_engine_tb;
         .busy(busy)
     );
 
-    // ---------------------------------------------------------
+    
     // 4. Clock & Memory Simulation
-    // ---------------------------------------------------------
+
     initial clk = 0;
     always #5 clk = ~clk; // 100MHz
 
@@ -68,9 +64,8 @@ module mac_engine_tb;
             wmem_rdata = '0;
     end
 
-    // ---------------------------------------------------------
+
     // 5. Tasks
-    // ---------------------------------------------------------
     task randomize_data();
         int h, i;
         logic signed [DATA_W-1:0] rand_w;
@@ -79,7 +74,7 @@ module mac_engine_tb;
         
         // Randomize Inputs
         for (i = 0; i < N_IN; i++) begin
-            input_vec_unpacked[i] = $random % 200; // Keep numbers small for easy mental math
+            input_vec_unpacked[i] = $random % 200; 
             invec_bus[i*DATA_W +: DATA_W] = input_vec_unpacked[i];
             $display("[TB] Input[%0d] = %0d", i, input_vec_unpacked[i]);
         end
@@ -88,7 +83,7 @@ module mac_engine_tb;
         weights_mem.delete();
         for (h = 0; h < N_HIDDEN; h++) begin
             for (i = 0; i < N_IN; i++) begin
-                rand_w = $random % 100; // Keep numbers small
+                rand_w = $random % 100; 
                 weights_mem[(h * N_IN) + i] = rand_w;
                 $display("[TB] Weight[H%0d][In%0d] (Addr %0d) = %0d", 
                          h, i, (h * N_IN) + i, rand_w);
@@ -111,11 +106,9 @@ module mac_engine_tb;
         end
     endtask
 
-   // ---------------------------------------------------------
-    // 6. Main Test Sequence (Improved)
-    // ---------------------------------------------------------
+
+    // 6. Main Test Sequence 
     initial begin
-        // Reset and Initialization
         rst_n = 0;
         start_compute = 0;
         #20 rst_n = 1;
@@ -129,7 +122,7 @@ module mac_engine_tb;
         @(posedge clk);
         start_compute = 0;
 
-        // --- ADDED: Capture Loop ---
+        //  Capture Loop 
         // Instead of just waiting, we loop N_HIDDEN times to catch every neuron
         for (int i = 0; i < N_HIDDEN; i++) begin
             @(posedge clk);
@@ -147,10 +140,9 @@ module mac_engine_tb;
         $finish;
     end
 
-    // ---------------------------------------------------------
+
     // 7. REAL-TIME MONITORING (The "Crucial Info")
-    // ---------------------------------------------------------
-    
+
    /* // Monitor 1: Address Request
     // This confirms the engine is asking for the right data
     always @(posedge clk) begin
@@ -160,9 +152,9 @@ module mac_engine_tb;
         end
     end
 */
-    // ---------------------------------------------------------
+
     // Monitor 2: DEEP INSPECTION (Data Path Trace)
-    // ---------------------------------------------------------
+
     // This block triggers every clock cycle during the processing phase.
     // It prints the internal registers to find where the data becomes 0.
     

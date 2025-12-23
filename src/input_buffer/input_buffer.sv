@@ -21,22 +21,20 @@ module input_buffer #(
     output logic                     vector_done
 );
 
-    // ------------------------------------------------------------------
+   
     // Local parameters
-    // ------------------------------------------------------------------
+
     localparam int CNT_W = (N_IN > 1) ? $clog2(N_IN) : 1;
 
-    // ------------------------------------------------------------------
+
     // Internal storage
-    // ------------------------------------------------------------------
     logic [CNT_W-1:0]              wr_ptr;
     logic signed [DATA_W-1:0]      inbuf [0:N_IN-1];
 
     integer i;
 
-    // ------------------------------------------------------------------
+
     // Pack inbuf[] into wide output bus
-    // ------------------------------------------------------------------
     genvar gi;
     generate
         for (gi = 0; gi < N_IN; gi++) begin : PACK
@@ -44,9 +42,8 @@ module input_buffer #(
         end
     endgenerate
 
-    // ------------------------------------------------------------------
+
     // Input buffering and vector completion logic
-    // ------------------------------------------------------------------
     always_ff @(posedge clk) begin
         if (!rst_n) begin
             wr_ptr      <= '0;

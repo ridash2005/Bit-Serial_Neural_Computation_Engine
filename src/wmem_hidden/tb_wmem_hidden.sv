@@ -2,9 +2,8 @@
 
 module tb_wmem_hidden;
 
-    // ---------------------------------------------------------
     // 1. Parameters & Signals
-    // ---------------------------------------------------------
+
     parameter int DATA_W   = 16;
     parameter int N_IN     = 8;  
     parameter int N_HIDDEN = 4;
@@ -32,26 +31,26 @@ module tb_wmem_hidden;
     
      int error_count = 0;
 
-    // ---------------------------------------------------------
+
     // 2. DUT Instantiation
-    // ---------------------------------------------------------
+
     wmem_hidden #(
         .DATA_W(DATA_W),
         .N_IN(N_IN),
         .N_HIDDEN(N_HIDDEN)
     ) dut (.*);
 
-    // ---------------------------------------------------------
+
     // 3. Clock Generation
-    // ---------------------------------------------------------
+
     initial begin
         clk = 0;
         forever #5 clk = ~clk; // 100 MHz
     end
 
-    // ---------------------------------------------------------
+
     // 4. Test Stimulus
-    // ---------------------------------------------------------
+
     initial begin
         $dumpfile("wmem_dump.vcd");
         $dumpvars(0, tb_wmem_hidden);
@@ -80,7 +79,7 @@ module tb_wmem_hidden;
         end
         w_wr_en <= 0; // Stop writing
 
-        // CRITICAL: The DUT has a 1-cycle data pipeline (w_data_pipe).
+    
         // We must wait for the last write to actually propagate into the BRAM array
         // before we attempt to read it back.
         repeat(2) @(posedge clk);
@@ -111,10 +110,8 @@ module tb_wmem_hidden;
         $finish;
     end
 
-    // ---------------------------------------------------------
+
     // Helper Tasks (Declared Automatic)
-    // ---------------------------------------------------------
-   
 
     // Corrected to handle the piped data write
     task automatic write_weight(

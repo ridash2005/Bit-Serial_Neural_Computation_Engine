@@ -1,3 +1,7 @@
+//--------------------------------
+// To be updated fully 
+//----------------------------------
+
 `timescale 1ns/1ps
 
 module bitserial_nn_tb;

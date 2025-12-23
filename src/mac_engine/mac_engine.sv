@@ -33,7 +33,7 @@ module mac_engine #(
     logic [BIT_W-1:0]    bit_idx;
     logic                bit_active;
     logic                mem_read_pending;
-    logic                mem_wait; // NEW: Added to handle 1-cycle memory latency
+    logic                mem_wait;
     logic [P_W-1:0]      mem_lane;
 
     logic signed [DATA_W-1:0] a_val;

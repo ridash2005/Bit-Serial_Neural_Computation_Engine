@@ -2,9 +2,9 @@
 
 module tb_relu_activation;
 
-    // -------------------------------------------------------------------------
+   
     // 1. Configuration & Signal Declaration
-    // -------------------------------------------------------------------------
+
     parameter int ACC_W = 16; // Using 16 bits for easier readability in logs
                               // (DUT defaults to 40, both work fine)
 
@@ -22,9 +22,8 @@ module tb_relu_activation;
     // Queue to act as the "Golden Reference" (Scoreboard)
     logic signed [ACC_W-1:0] expected_queue [$];
 
-    // -------------------------------------------------------------------------
+    
     // 2. DUT Instantiation
-    // -------------------------------------------------------------------------
     relu_activation #(
         .ACC_W(ACC_W)
     ) dut (
@@ -36,17 +35,16 @@ module tb_relu_activation;
         .out_valid(out_valid)
     );
 
-    // -------------------------------------------------------------------------
+
     // 3. Clock Generation
-    // -------------------------------------------------------------------------
+
     initial begin
         clk = 0;
         forever #5 clk = ~clk; // 10ns period (100 MHz)
     end
 
-    // -------------------------------------------------------------------------
+
     // 4. Scoreboard / Monitor (Self-Checking Logic)
-    // -------------------------------------------------------------------------
     
     // INPUT MONITOR: Capture what goes IN, calculate expected ReLU, push to queue
     always @(posedge clk) begin
@@ -87,9 +85,9 @@ module tb_relu_activation;
         end
     end
 
-    // -------------------------------------------------------------------------
+
     // 5. Test Stimulus
-    // -------------------------------------------------------------------------
+
     initial begin
         // Setup Waveform dumping (viewable in GTKWave or similar)
         $dumpfile("dump.vcd");
@@ -150,9 +148,9 @@ module tb_relu_activation;
         repeat(10) @(posedge clk); // Drain pipeline
 
 
-        // ---------------------------------------------------------------------
+
         // End of Simulation
-        // ---------------------------------------------------------------------
+
         $display("---------------------------------------------------");
         if (error_count == 0 && expected_queue.size() == 0) begin
             $display(" TEST PASSED! Processed %0d transactions.", transaction_count);
@@ -164,9 +162,9 @@ module tb_relu_activation;
         $finish;
     end
 
-    // -------------------------------------------------------------------------
+    
     // Helper Task: Drive a single value for one clock cycle
-    // -------------------------------------------------------------------------
+
     task drive_single_input(input logic signed [ACC_W-1:0] data);
         begin
             in_data  <= data;
