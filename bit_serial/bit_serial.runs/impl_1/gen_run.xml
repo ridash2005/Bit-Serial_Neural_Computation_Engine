@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GenRun Id="impl_1" LaunchPart="xcau25p-sfvb784-1LV-i" LaunchTime="1766465801">
+  <File Type="ROUTE-BLACKBOX-DCP" Name="bitserial_nn_routed_bb.dcp"/>
+  <File Type="OPT-UTIL" Name="bitserial_nn_utilization_opted.rpt"/>
+  <File Type="ROUTE-PWR" Name="bitserial_nn_power_routed.rpt"/>
+  <File Type="PA-TCL" Name="bitserial_nn.tcl"/>
+  <File Type="OPT-METHODOLOGY-DRC" Name="bitserial_nn_methodology_drc_opted.rpt"/>
+  <File Type="INIT-TIMING" Name="bitserial_nn_timing_summary_init.rpt"/>
+  <File Type="ROUTE-PWR-SUM" Name="bitserial_nn_power_summary_routed.pb"/>
+  <File Type="OPT-RQA-PB" Name="bitserial_nn_rqa_opted.pb"/>
+  <File Type="REPORTS-TCL" Name="bitserial_nn_reports.tcl"/>
+  <File Type="ROUTE-TIMING-PB" Name="bitserial_nn_timing_summary_routed.pb"/>
+  <File Type="OPT-UTIL-PB" Name="bitserial_nn_utilization_opted.pb"/>
+  <File Type="OPT-DCP" Name="bitserial_nn_opt.dcp"/>
+  <File Type="OPT-DRC" Name="bitserial_nn_drc_opted.rpt"/>
+  <File Type="OPT-HWDEF" Name="bitserial_nn.hwdef"/>
+  <File Type="OPT-TIMING" Name="bitserial_nn_timing_summary_opted.rpt"/>
+  <File Type="PWROPT-DCP" Name="bitserial_nn_pwropt.dcp"/>
+  <File Type="PWROPT-DRC" Name="bitserial_nn_drc_pwropted.rpt"/>
+  <File Type="PWROPT-TIMING" Name="bitserial_nn_timing_summary_pwropted.rpt"/>
+  <File Type="PLACE-DCP" Name="bitserial_nn_placed.dcp"/>
+  <File Type="PLACE-IO" Name="bitserial_nn_io_placed.rpt"/>
+  <File Type="PLACE-CLK" Name="bitserial_nn_clock_utilization_placed.rpt"/>
+  <File Type="PLACE-UTIL" Name="bitserial_nn_utilization_placed.rpt"/>
+  <File Type="PLACE-UTIL-PB" Name="bitserial_nn_utilization_placed.pb"/>
+  <File Type="PLACE-CTRL" Name="bitserial_nn_control_sets_placed.rpt"/>
+  <File Type="PLACE-SIMILARITY" Name="bitserial_nn_incremental_reuse_placed.rpt"/>
+  <File Type="PLACE-PRE-SIMILARITY" Name="bitserial_nn_incremental_reuse_pre_placed.rpt"/>
+  <File Type="BG-BIN" Name="bitserial_nn.bin"/>
+  <File Type="PLACE-TIMING" Name="bitserial_nn_timing_summary_placed.rpt"/>
+  <File Type="ROUTE-PWR-RPX" Name="bitserial_nn_power_routed.rpx"/>
+  <File Type="PLACE-RQA-PB" Name="bitserial_nn_rqa_placed.pb"/>
+  <File Type="POSTPLACE-PWROPT-DCP" Name="bitserial_nn_postplace_pwropt.dcp"/>
+  <File Type="POSTPLACE-PWROPT-TIMING" Name="bitserial_nn_timing_summary_postplace_pwropted.rpt"/>
+  <File Type="PHYSOPT-DCP" Name="bitserial_nn_physopt.dcp"/>
+  <File Type="PHYSOPT-DRC" Name="bitserial_nn_drc_physopted.rpt"/>
+  <File Type="PHYSOPT-TIMING" Name="bitserial_nn_timing_summary_physopted.rpt"/>
+  <File Type="ROUTE-UTIL" Name="bitserial_nn_utilization_routed.rpt"/>
+  <File Type="ROUTE-ERROR-DCP" Name="bitserial_nn_routed_error.dcp"/>
+  <File Type="ROUTE-DCP" Name="bitserial_nn_routed.dcp"/>
+  <File Type="ROUTE-TIMINGSUMMARY" Name="bitserial_nn_timing_summary_routed.rpt"/>
+  <File Type="ROUTE-UTIL-PB" Name="bitserial_nn_utilization_routed.pb"/>
+  <File Type="ROUTE-DRC" Name="bitserial_nn_drc_routed.rpt"/>
+  <File Type="ROUTE-DRC-PB" Name="bitserial_nn_drc_routed.pb"/>
+  <File Type="ROUTE-DRC-RPX" Name="bitserial_nn_drc_routed.rpx"/>
+  <File Type="ROUTE-METHODOLOGY-DRC" Name="bitserial_nn_methodology_drc_routed.rpt"/>
+  <File Type="ROUTE-METHODOLOGY-DRC-RPX" Name="bitserial_nn_methodology_drc_routed.rpx"/>
+  <File Type="ROUTE-METHODOLOGY-DRC-PB" Name="bitserial_nn_methodology_drc_routed.pb"/>
+  <File Type="ROUTE-RQS-PB" Name="bitserial_nn_rqs_routed.pb"/>
+  <File Type="ROUTE-STATUS" Name="bitserial_nn_route_status.rpt"/>
+  <File Type="ROUTE-STATUS-PB" Name="bitserial_nn_route_status.pb"/>
+  <File Type="ROUTE-TIMING-RPX" Name="bitserial_nn_timing_summary_routed.rpx"/>
+  <File Type="ROUTE-SIMILARITY" Name="bitserial_nn_incremental_reuse_routed.rpt"/>
+  <File Type="ROUTE-CLK" Name="bitserial_nn_clock_utilization_routed.rpt"/>
+  <File Type="ROUTE-BUS-SKEW" Name="bitserial_nn_bus_skew_routed.rpt"/>
+  <File Type="ROUTE-BUS-SKEW-PB" Name="bitserial_nn_bus_skew_routed.pb"/>
+  <File Type="ROUTE-BUS-SKEW-RPX" Name="bitserial_nn_bus_skew_routed.rpx"/>
+  <File Type="POSTROUTE-PHYSOPT-DCP" Name="bitserial_nn_postroute_physopt.dcp"/>
+  <File Type="POSTROUTE-PHYSOPT-BLACKBOX-DCP" Name="bitserial_nn_postroute_physopt_bb.dcp"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING" Name="bitserial_nn_timing_summary_postroute_physopted.rpt"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING-PB" Name="bitserial_nn_timing_summary_postroute_physopted.pb"/>
+  <File Type="POSTROUTE-PHYSOPT-TIMING-RPX" Name="bitserial_nn_timing_summary_postroute_physopted.rpx"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW" Name="bitserial_nn_bus_skew_postroute_physopted.rpt"/>
+  <File Type="BG-BIT" Name="bitserial_nn.bit"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-PB" Name="bitserial_nn_bus_skew_postroute_physopted.pb"/>
+  <File Type="POSTROUTE-PHYSOPT-BUS-SKEW-RPX" Name="bitserial_nn_bus_skew_postroute_physopted.rpx"/>
+  <File Type="BITSTR-MSK" Name="bitserial_nn.msk"/>
+  <File Type="BITSTR-RBT" Name="bitserial_nn.rbt"/>
+  <File Type="BITSTR-NKY" Name="bitserial_nn.nky"/>
+  <File Type="BITSTR-BMM" Name="bitserial_nn_bd.bmm"/>
+  <File Type="BITSTR-MMI" Name="bitserial_nn.mmi"/>
+  <File Type="PDI-FILE" Name="bitserial_nn.pdi"/>
+  <File Type="BOOT-PDI-FILE" Name="bitserial_nn_boot.pdi"/>
+  <File Type="PL-PDI-FILE" Name="bitserial_nn_pld.pdi"/>
+  <File Type="RCFI_FILE" Name="bitserial_nn.rcfi"/>
+  <File Type="CFI_FILE" Name="bitserial_nn.cfi"/>
+  <File Type="RNPI_FILE" Name="bitserial_nn.rnpi"/>
+  <File Type="RCDO-FILE" Name="bitserial_nn.rcdo"/>
+  <File Type="MARKER-RNPI-FILE" Name="bitserial_nn_markers.rnpi"/>
+  <File Type="MARKER-RCDO-FILE" Name="bitserial_nn_markers.rcdo"/>
+  <File Type="BOOT_RNPI_FILE" Name="bitserial_nn_boot.rnpi"/>
+  <File Type="BOOT_MARKER_RNPI_FILE" Name="bitserial_nn_boot_markers.rnpi"/>
+  <File Type="PL_RNPI_FILE" Name="bitserial_nn_pld.rnpi"/>
+  <File Type="PL_MARKER_RNPI_FILE" Name="bitserial_nn_pld_markers.rnpi"/>
+  <File Type="PL_MASK_RNPI_FILE" Name="bitserial_nn_pld_mask.rnpi"/>
+  <File Type="PL_SHUTDOWN_RNPI_FILE" Name="bitserial_nn_pld_shutdown.rnpi"/>
+  <File Type="PL_UNMASK_RNPI_FILE" Name="bitserial_nn_pld_unmask.rnpi"/>
+  <File Type="PL-RCDO-FILE" Name="bitserial_nn_pld.rcdo"/>
+  <File Type="PL-CLEAR-RCDO-FILE" Name="bitserial_nn_pld_clear.rcdo"/>
+  <File Type="PL_MARKER_RCDO_FILE" Name="bitserial_nn_pld_markers.rcdo"/>
+  <File Type="PL_MASK_RCDO_FILE" Name="bitserial_nn_pld_mask.rcdo"/>
+  <File Type="PL_UNMASK_MARKER_RCDO_FILE" Name="bitserial_nn_pld_unmask_markers.rcdo"/>
+  <File Type="PL_UNMASK_RCDO_FILE" Name="bitserial_nn_pld_unmask.rcdo"/>
+  <File Type="NPI_FILE" Name="bitserial_nn.npi"/>
+  <File Type="RBD_FILE" Name="bitserial_nn.rbd"/>
+  <File Type="MMI-FILE" Name="bitserial_nn.mmi"/>
+  <File Type="BIF-FILE" Name="bitserial_nn.bif"/>
+  <File Type="BOOT-BIF-FILE" Name="bitserial_nn_boot.bif"/>
+  <File Type="PL-BIF-FILE" Name="bitserial_nn_pld.bif"/>
+  <File Type="LTX-FILE" Name="bitserial_nn.ltx"/>
+  <File Type="BOOT-LTX-FILE" Name="bitserial_nn_boot.ltx"/>
+  <File Type="PL-LTX-FILE" Name="bitserial_nn_pld.ltx"/>
+  <File Type="BITSTR-LTX" Name="debug_nets.ltx"/>
+  <File Type="BITSTR-LTX" Name="bitserial_nn.ltx"/>
+  <File Type="BITSTR-SYSDEF" Name="bitserial_nn.sysdef"/>
+  <File Type="BG-BGN" Name="bitserial_nn.bgn"/>
+  <File Type="BG-DRC" Name="bitserial_nn.drc"/>
+  <File Type="RDI-RDI" Name="bitserial_nn.vdi"/>
+  <File Type="WBT-USG" Name="usage_statistics_webtalk.html"/>
+  <File Type="ROUTE-RQS" Name="bitserial_nn_routed.rqs"/>
+  <File Type="POSTROUTE-PHYSOPT-RQS" Name="bitserial_nn_postroute_physopted.rqs"/>
+  <File Type="ROUTE-RQS-RPT" Name="route_report_qor_suggestions_0.rpt"/>
+  <File Type="POSTROUTE-PHYSOPT-RQS-RPT" Name="postroute_physopt_report_qor_suggestions_0.rpt"/>
+  <FileSet Name="sources" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
+    <Filter Type="Srcs"/>
+    <File Path="$PSRCDIR/sources_1/imports/src/input_buffer/input_buffer.sv">
+      <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../GitHub/Bit-Serial_Neural_Computation_Engine/src/input_buffer/input_buffer.sv"/>
+        <Attr Name="ImportTime" Val="1766408001"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/imports/src/mac_engine/mac_engine.sv">
+      <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../GitHub/Bit-Serial_Neural_Computation_Engine/src/mac_engine/mac_engine.sv"/>
+        <Attr Name="ImportTime" Val="1766454445"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/imports/src/relu_activation/relu_activation.sv">
+      <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../GitHub/Bit-Serial_Neural_Computation_Engine/src/relu_activation/relu_activation.sv"/>
+        <Attr Name="ImportTime" Val="1766459681"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/imports/src/wmem_hidden/wmem_hidden.sv">
+      <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../GitHub/Bit-Serial_Neural_Computation_Engine/src/wmem_hidden/wmem_hidden.sv"/>
+        <Attr Name="ImportTime" Val="1766463130"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <File Path="$PSRCDIR/sources_1/imports/src/bitserial_nn/bitserial_nn.sv">
+      <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../GitHub/Bit-Serial_Neural_Computation_Engine/src/bitserial_nn/bitserial_nn.sv"/>
+        <Attr Name="ImportTime" Val="1766408907"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+        <Attr Name="UsedIn" Val="simulation"/>
+      </FileInfo>
+    </File>
+    <Config>
+      <Option Name="DesignMode" Val="RTL"/>
+      <Option Name="TopModule" Val="bitserial_nn"/>
+      <Option Name="TopAutoSet" Val="TRUE"/>
+    </Config>
+  </FileSet>
+  <FileSet Name="constrs_in" Type="Constrs" RelSrcDir="$PSRCDIR/constrs_1" RelGenDir="$PGENDIR/constrs_1">
+    <Filter Type="Constrs"/>
+    <File Path="$PSRCDIR/constrs_1/imports/src/xdc_2.xdc">
+      <FileInfo>
+        <Attr Name="ImportPath" Val="$PPRDIR/../../../GitHub/Bit-Serial_Neural_Computation_Engine/src/xdc_2.xdc"/>
+        <Attr Name="ImportTime" Val="1764871684"/>
+        <Attr Name="UsedIn" Val="synthesis"/>
+        <Attr Name="UsedIn" Val="implementation"/>
+      </FileInfo>
+    </File>
+    <Config>
+      <Option Name="ConstrsType" Val="XDC"/>
+    </Config>
+  </FileSet>
+  <FileSet Name="utils" Type="Utils" RelSrcDir="$PSRCDIR/utils_1" RelGenDir="$PGENDIR/utils_1">
+    <Filter Type="Utils"/>
+    <Config>
+      <Option Name="TopAutoSet" Val="TRUE"/>
+    </Config>
+  </FileSet>
+  <Strategy Version="1" Minor="2">
+    <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2025">
+      <Desc>Default settings for Implementation.</Desc>
+    </StratHandle>
+    <Step Id="init_design"/>
+    <Step Id="opt_design"/>
+    <Step Id="power_opt_design"/>
+    <Step Id="place_design"/>
+    <Step Id="post_place_power_opt_design"/>
+    <Step Id="phys_opt_design"/>
+    <Step Id="route_design"/>
+    <Step Id="post_route_phys_opt_design"/>
+    <Step Id="write_bitstream"/>
+  </Strategy>
+</GenRun>
