@@ -1,5 +1,7 @@
 # Bit-Serial_Neural_Computation_Engine
 
+Hi,everyone this problem statement was presented and declared a winning presentation in a vlsi hackathon held at NIT Jamshedpur on December 2025.The hackathon ppt is uploaded in the repo.For basic understanding,please follow below:
+
 
 This repo contains five basic modules:
 
@@ -24,4 +26,5 @@ This repo contains five basic modules:
 >relu_activation.sv module describes just like a relu activation layer in a neural network how such thing can be implemented in hardware fpgas.The output from the mac_engine is passed on to the relu_activation layer.
 
 ## all the files and architecture details will be added soon 
+## We will come up with more details and modifications soon!
 # Stay Tuned !!
