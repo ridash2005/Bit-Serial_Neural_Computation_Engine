@@ -1,6 +1,6 @@
 # Bit-Serial_Neural_Computation_Engine
 
-Hi,everyone this problem statement was presented and declared a winning presentation in a vlsi hackathon held at NIT Jamshedpur on December 2025.The hackathon ppt is uploaded in the repo.For basic understanding,please follow below:
+Hi, everyone this problem statement was presented and declared a winning presentation in the VLSI Hackathon held at NIT Jamshedpur on December 2025. The presentation slides are uploaded in the repo. For basic understanding please follow below:
 
 
 This repo contains five basic modules:
