@@ -2,10 +2,9 @@
 
 module tb_input_buffer;
 
-    // -------------------------------------------------------------------------
+
     // 1. Configuration
-    // -------------------------------------------------------------------------
-    // We reduce N_IN to 8 for simulation clarity (easier to see in waveforms)
+
     parameter int DATA_W = 16;
     parameter int N_IN   = 8;  
 
@@ -14,6 +13,7 @@ module tb_input_buffer;
     logic rst_n;
     logic signed [DATA_W-1:0] data_in;
     logic data_in_valid;
+    logic vector_last;
     logic busy;
     logic signed [N_IN*DATA_W-1:0] invec_bus;
     logic vector_done;
@@ -22,12 +22,15 @@ module tb_input_buffer;
     int error_count = 0;
     int vector_count = 0;
 
-    // Golden Reference Queue (Scoreboard)
-    logic signed [DATA_W-1:0] expected_data_q [$];
+    // Golden Reference - Store complete vectors
+    logic signed [DATA_W-1:0] current_vector [0:N_IN-1];
+    int current_word_idx = 0;
+    
+    logic signed [DATA_W-1:0] expected_vectors [$][N_IN];
 
-    // -------------------------------------------------------------------------
+
     // 2. DUT Instantiation
-    // -------------------------------------------------------------------------
+
     input_buffer #(
         .DATA_W(DATA_W),
         .N_IN  (N_IN)
@@ -36,31 +39,47 @@ module tb_input_buffer;
         .rst_n        (rst_n),
         .data_in      (data_in),
         .data_in_valid(data_in_valid),
+        .vector_last  (vector_last),
         .busy         (busy),
         .invec_bus    (invec_bus),
         .vector_done  (vector_done)
     );
 
-    // -------------------------------------------------------------------------
+
     // 3. Clock Generation
-    // -------------------------------------------------------------------------
+
     initial begin
         clk = 0;
-        forever #5 clk = ~clk; // 100MHz
+        forever #5 clk = ~clk;
     end
 
-    // -------------------------------------------------------------------------
+
     // 4. Scoreboard / Monitor
-    // -------------------------------------------------------------------------
-    
-    // INPUT MONITOR: Capture valid data entering the buffer
+
+
+    // INPUT MONITOR - Build complete vectors before comparing
     always @(posedge clk) begin
         if (rst_n && data_in_valid && !busy) begin
-            expected_data_q.push_back(data_in);
+            current_vector[current_word_idx] = data_in;
+            $display("[Time %0t] INPUT: data=%0d, idx=%0d, vector_last=%0b", 
+                     $time, data_in, current_word_idx, vector_last);
+            
+            // If this completes a vector, save it
+            if (vector_last || (current_word_idx == N_IN-1)) begin
+                logic signed [DATA_W-1:0] vec_copy [N_IN];
+                for (int i = 0; i < N_IN; i++) begin
+                    vec_copy[i] = current_vector[i];
+                end
+                expected_vectors.push_back(vec_copy);
+                current_word_idx = 0;
+                $display("[Time %0t] >>> Vector captured in golden model", $time);
+            end else begin
+                current_word_idx++;
+            end
         end
     end
 
-    // OUTPUT MONITOR: Check the vector when 'vector_done' triggers
+    // OUTPUT MONITOR
     always @(posedge clk) begin
         if (rst_n && vector_done) begin
             vector_count++;
@@ -68,159 +87,206 @@ module tb_input_buffer;
         end
     end
 
-    // Helper task to compare DUT output against Queue
     task check_output_vector();
         logic signed [DATA_W-1:0] expected_val;
         logic signed [DATA_W-1:0] actual_val;
+        logic signed [DATA_W-1:0] expected_vec [N_IN];
         int i;
         
-        $display("[Time %0t] Vector Done triggered. Verifying %0d words...", $time, N_IN);
+        $display("[Time %0t] Vector Done triggered. Verifying %0d words...", 
+                 $time, N_IN);
 
-        if (expected_data_q.size() < N_IN) begin
-            $error("Error: Vector done, but not enough data in expected queue!");
+        if (expected_vectors.size() == 0) begin
+            $error("Error: Vector done, but no expected vector available!");
             error_count++;
             return;
         end
 
-        // Iterate through the N_IN words
+        // Pop the expected vector
+        expected_vec = expected_vectors.pop_front();
+
         for (i = 0; i < N_IN; i++) begin
-            expected_val = expected_data_q.pop_front();
-            
-            // Extract the specific word from the wide bus
-            // Slicing syntax: [ (Index+1)*Width-1  -: Width ]
-            actual_val = invec_bus[(i+1)*DATA_W-1 -: DATA_W];
+            expected_val = expected_vec[i];
+            actual_val   = invec_bus[(i+1)*DATA_W-1 -: DATA_W];
 
             if (actual_val !== expected_val) begin
-                $error("MISMATCH at index %0d! Exp: %0d, Got: %0d", i, expected_val, actual_val);
+                $error("MISMATCH at index %0d! Exp: %0d, Got: %0d",
+                       i, expected_val, actual_val);
                 error_count++;
             end
         end
-        $display("          Vector verification passed.");
+        
+        if (error_count == 0 || 
+            (vector_count > 1 && error_count == (vector_count - 1) * N_IN)) begin
+            $display("          Vector verification passed.");
+        end
     endtask
 
-    // -------------------------------------------------------------------------
+
     // 5. Test Stimulus
-    // -------------------------------------------------------------------------
+
     initial begin
         $dumpfile("dump.vcd");
         $dumpvars(0, tb_input_buffer);
 
-        $display("---------------------------------------------------");
-        $display(" Starting Input Buffer Testbench (N_IN=%0d)", N_IN);
-        $display("---------------------------------------------------");
-
-        // Init
         rst_n = 0;
         busy = 0;
         data_in_valid = 0;
         data_in = 0;
+        vector_last = 0;
 
-        // Reset
         repeat(3) @(posedge clk);
         rst_n = 1;
         @(posedge clk);
 
-        // --- TEST 1: Fill a Single Vector (Sequential) ---
+        // --- TEST 1 ---
         $display("\n--- Test 1: Simple Sequential Fill ---");
-        repeat(N_IN) begin
-            drive_word($urandom_range(100, 200));
-        end
-        
-        // Wait for processing
+        send_vector_simple();
         repeat(2) @(posedge clk);
 
-
-        // --- TEST 2: Backpressure (Busy) Test ---
+        // --- TEST 2 ---
         $display("\n--- Test 2: Fill with Busy Interruptions ---");
-        // Send half vector
-        repeat(N_IN/2) drive_word($urandom_range(1000, 2000));
         
-        // Assert BUSY
-        $display("    Asserting BUSY (Simulating stall)...");
-        busy = 1; 
-        repeat(5) @(posedge clk); // Hold busy for 5 clocks
+        // Send 4 words
+        repeat(N_IN/2) send_word($urandom_range(1000, 2000));
         
-        // Try to drive while busy (task should wait)
-        fork 
+        // Assert busy and try to send a word while busy
+        busy = 1;
+        $display("[Time %0t] BUSY asserted", $time);
+        
+        fork
+            // Thread 1: Try to send DEAD (will stall until busy=0)
             begin
-                // This will block inside the task until busy is low
-                drive_word(16'hDEAD); 
+                send_word(16'hDEAD);
+                $display("[Time %0t] DEAD word accepted", $time);
             end
+            
+            // Thread 2: Release busy after some cycles
             begin
-                // Release busy after 2 clocks
-                repeat(2) @(posedge clk);
+                repeat(5) @(posedge clk);
                 busy = 0;
-                $display("    Releasing BUSY...");
+                $display("[Time %0t] BUSY released", $time);
             end
         join
-
-        // Finish the rest of the vector
-        repeat((N_IN/2) - 1) drive_word($urandom_range(1000, 2000));
         
+        // Send remaining words to complete the vector
+        repeat((N_IN/2) - 1) send_word($urandom_range(1000, 2000));
+        
+        wait_for_vector_done();
         repeat(2) @(posedge clk);
 
-
-       // --- TEST 3: Continuous Streaming ---
+        // --- TEST 3 ---
         $display("\n--- Test 3: Continuous Streaming (3 Vectors) ---");
-        repeat(3 * N_IN) begin
-            drive_word_streaming($urandom());
+        repeat(3) begin
+            send_vector_streaming();
+            wait_for_vector_done();
         end
-        
-        // 1. Turn off valid immediately after the last word
-        data_in_valid <= 1'b0; 
 
-        // 2. DRAIN: Wait for the registered 'vector_done' to pulse for the final set
-        repeat(5) @(posedge clk); 
+        // Ensure signals are cleared
+        @(negedge clk);
+        data_in_valid <= 0;
+        vector_last   <= 0;
+        repeat(5) @(posedge clk);
 
-          // 3. FINAL CHECK
-        $display("---------------------------------------------------");
+        // FINAL REPORT
+        $display("\n========================================");
         if (error_count == 0) begin
-            $display(" TEST PASSED! Vectors processed: %0d", vector_count);
-            if (expected_data_q.size() != 0)
-                $display(" INFO: %0d leftover words (partial vector, expected behavior).",
-                         expected_data_q.size());
+            $display("TEST PASSED! Vectors processed: %0d", vector_count);
         end else begin
-            $display(" TEST FAILED. Errors: %0d, Leftover Data: %0d",
-                     error_count, expected_data_q.size());
+            $display("TEST FAILED. Errors: %0d", error_count);
         end
-        $display("---------------------------------------------------");
-        $finish;
-end
+        $display("Leftover expected vectors: %0d", expected_vectors.size());
+        $display("========================================\n");
 
-    // -------------------------------------------------------------------------
-    // Task: Drive a single word with flow control
-    // -------------------------------------------------------------------------
-    task drive_word(input logic signed [DATA_W-1:0] val);
+        $finish;
+    end
+
+ 
+    // Task: Send a complete vector using simple drive
+
+    task send_vector_simple();
+        int i;
+        for (i = 0; i < N_IN; i++) begin
+            send_word($urandom_range(100, 200));
+        end
+        wait_for_vector_done();
+    endtask
+
+
+    // Task: Send a complete vector using streaming drive
+
+    task send_vector_streaming();
+        int i;
+        for (i = 0; i < N_IN; i++) begin
+            send_word_streaming($urandom(), (i == N_IN-1));
+        end
+        // Clear signals after last word
+        @(negedge clk);
+        data_in_valid = 0;
+        vector_last = 0;
+    endtask
+
+
+    // Task: Send a single word (waits until accepted, non-blocking = 1 cycle)
+
+    task send_word(input logic signed [DATA_W-1:0] val);
         begin
-            // If DUT is busy, wait (Handshake emulation)
+            // Wait until not busy
             while (busy) @(posedge clk);
 
-            data_in <= val;
-            data_in_valid <= 1;
-            @(posedge clk);
-            data_in_valid <= 0;
-            data_in <= 'x;
+            // Drive the data for 1 cycle
+            @(negedge clk);  // Drive on negative edge to avoid races
+            data_in       = val;
+            data_in_valid = 1;
+            vector_last   = (current_word_idx == N_IN-1);
+
+            @(posedge clk);  // Wait for positive edge (DUT samples)
             
-            // Random gap between words for realism (optional)
-            // repeat($urandom_range(0,1)) @(posedge clk);
+            // Clear after sampled
+            @(negedge clk);
+            data_in_valid = 0;
+            vector_last   = 0;
         end
     endtask
 
-    // -------------------------------------------------------------------------
-    // Task: Streaming drive (no gaps, checks busy)
-    // -------------------------------------------------------------------------
-    task drive_word_streaming(input logic signed [DATA_W-1:0] val);
-        begin
-             // If DUT is busy, wait (hold valid low or hold previous value)
-             // Here we just wait for slot
-            while (busy) begin
-                data_in_valid <= 0;
-                @(posedge clk);
-            end
 
-            data_in <= val;
-            data_in_valid <= 1;
+    // Task: Send word streaming (back-to-back, specify last manually)
+
+    task send_word_streaming(input logic signed [DATA_W-1:0] val, input logic is_last);
+        begin
+            // Wait until not busy
+            while (busy) @(posedge clk);
+
+            // Drive the data
+            @(negedge clk);
+            data_in       = val;
+            data_in_valid = 1;
+            vector_last   = is_last;
+
+            @(posedge clk);  // Wait for DUT to sample
+            
+            // Clear valid if not continuing (but don't clear last yet if it's set)
+            // Last will be cleared by the calling task
+        end
+    endtask
+
+
+    // Task: Wait for a word to be accepted
+
+    task wait_word_accepted();
+        begin
             @(posedge clk);
+            while (data_in_valid && busy) @(posedge clk);
+        end
+    endtask
+
+    // Task: Wait for vector_done pulse
+
+    task wait_for_vector_done();
+        begin
+            @(posedge clk);
+            while (!vector_done) @(posedge clk);
+            $display("[Time %0t] >>> Vector done detected", $time);
         end
     endtask
 

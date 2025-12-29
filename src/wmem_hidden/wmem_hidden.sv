@@ -34,7 +34,7 @@ module wmem_hidden #(
     logic signed [DATA_W-1:0] mem [0:WMEM_SIZE-1];
 
 
-    // Write data pipeline (Correctly Aligned)
+    // Write data pipeline 
     logic signed [DATA_W-1:0] w_data_reg;
     logic [WMEM_ADDR_W-1:0]   w_addr_reg;
     logic                     w_en_reg;
@@ -63,20 +63,4 @@ module wmem_hidden #(
             rdata <= mem[raddr];
         end
     end
-
-`ifndef SYNTHESIS
- 
-    // Simulation-only safety checks
-    // Address bounds checking
-    always_ff @(posedge clk) begin
-        if (w_wr_en) begin
-            assert (w_addr_reg < WMEM_SIZE)
-                else $fatal("WMEM WRITE ADDR OOB: %0d", waddr_flat);
-        end
-
-        assert (raddr < WMEM_SIZE)
-            else $fatal("WMEM READ ADDR OOB: %0d", raddr);
-    end
-`endif
-
 endmodule

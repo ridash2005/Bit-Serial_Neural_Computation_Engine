@@ -11,6 +11,9 @@ module input_buffer #(
     input  logic signed [DATA_W-1:0] data_in,
     input  logic                     data_in_valid,
 
+    // AXI end-of-vector marker (tlast)
+    input  logic                     vector_last,
+
     // MAC status
     input  logic                     busy,
 
@@ -21,20 +24,22 @@ module input_buffer #(
     output logic                     vector_done
 );
 
-   
+     
     // Local parameters
-
+     
     localparam int CNT_W = (N_IN > 1) ? $clog2(N_IN) : 1;
 
-
+     
     // Internal storage
+     
     logic [CNT_W-1:0]              wr_ptr;
     logic signed [DATA_W-1:0]      inbuf [0:N_IN-1];
 
     integer i;
 
-
-    // Pack inbuf[] into wide output bus
+     
+    // Pack buffer into wide bus
+     
     genvar gi;
     generate
         for (gi = 0; gi < N_IN; gi++) begin : PACK
@@ -42,8 +47,9 @@ module input_buffer #(
         end
     endgenerate
 
-
+     
     // Input buffering and vector completion logic
+     
     always_ff @(posedge clk) begin
         if (!rst_n) begin
             wr_ptr      <= '0;
@@ -53,17 +59,32 @@ module input_buffer #(
                 inbuf[i] <= '0;
 
         end else begin
-            vector_done <= 1'b0;
+            vector_done <= 1'b0;  // default
 
             // Stall input buffer while MAC is busy
             if (!busy && data_in_valid) begin
                 inbuf[wr_ptr] <= data_in;
 
-                if (wr_ptr == N_IN-1) begin
+                // Only trigger vector_done if we've received ALL N_IN words
+                // AND vector_last is asserted correctly
+                if ((wr_ptr == N_IN-1) && vector_last) begin
                     wr_ptr      <= '0;
-                    vector_done <= 1'b1;   // 1-cycle pulse
-                end
-                else begin
+                    vector_done <= 1'b1;   // single-cycle pulse
+                end else if (wr_ptr == N_IN-1) begin
+                    // Full buffer but no vector_last - reset and discard
+                    wr_ptr <= '0;
+`ifndef SYNTHESIS
+                    $error("[Time %0t] Buffer full but vector_last not asserted! Vector discarded.", $time);
+`endif
+                end else if (vector_last) begin
+                    // vector_last arrived early - discard incomplete vector
+                    wr_ptr <= '0;
+`ifndef SYNTHESIS
+                    $error("[Time %0t] vector_last arrived at position %0d (expected %0d). Incomplete vector discarded.", 
+                           $time, wr_ptr, N_IN-1);
+`endif
+                end else begin
+                    // Normal increment
                     wr_ptr <= wr_ptr + 1'b1;
                 end
             end
