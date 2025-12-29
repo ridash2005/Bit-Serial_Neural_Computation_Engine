@@ -1,6 +1,0 @@
-0.7
-2020.2
-May 22 2025
-00:13:55
-D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.sim/sim_1/synth/timing/xsim/bitserial_nn_tb_time_synth.v,1766997469,verilog,,,,IBUF_HD309;IBUF_HD310;IBUF_HD311;IBUF_HD312;IBUF_HD313;IBUF_HD314;IBUF_HD315;IBUF_HD316;IBUF_HD317;IBUF_HD318;IBUF_HD319;IBUF_HD320;IBUF_HD321;IBUF_HD322;IBUF_HD323;IBUF_HD324;IBUF_HD325;IBUF_HD326;IBUF_HD327;IBUF_HD328;IBUF_HD329;IBUF_HD330;IBUF_HD331;IBUF_HD332;IBUF_HD333;IBUF_HD334;IBUF_HD335;IBUF_HD336;IBUF_HD337;IBUF_HD338;IBUF_HD339;IBUF_HD340;IBUF_HD341;IBUF_HD342;IBUF_HD343;IBUF_HD344;IBUF_HD345;IBUF_HD346;IBUF_HD347;IBUF_HD348;IBUF_HD349;IBUF_HD350;IBUF_HD351;IBUF_HD352;IBUF_HD353;IBUF_HD354;IBUF_HD355;IBUF_HD356;IBUF_HD357;IBUF_HD358;IBUF_HD359;IBUF_HD360;IBUF_UNIQ_BASE_;bitserial_nn;glbl;input_buffer;mac_engine;relu_activation;wmem_hidden,,uvm,../../../../../../../../APPS/Xilinx/2025.1/Vivado/data/rsb/busdef,,,,,
-D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/sim_1/imports/src/bitserial_nn/tb_bitserial_nn.sv,1766997440,systemVerilog,,,,bitserial_nn_tb,,uvm,../../../../../../../../APPS/Xilinx/2025.1/Vivado/data/rsb/busdef,,,,,

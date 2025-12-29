@@ -1,6 +1,0 @@
-0.7
-2020.2
-May 22 2025
-00:13:55
-D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.sim/sim_1/synth/func/xsim/bitserial_nn_tb_func_synth.v,1766998771,verilog,,,,bitserial_nn;glbl;input_buffer;mac_engine;relu_activation;wmem_hidden,,uvm,../../../../../../../../APPS/Xilinx/2025.1/Vivado/data/rsb/busdef,,,,,
-D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/sim_1/imports/src/bitserial_nn/tb_bitserial_nn.sv,1766998602,systemVerilog,,,,bitserial_nn_tb,,uvm,../../../../../../../../APPS/Xilinx/2025.1/Vivado/data/rsb/busdef,,,,,

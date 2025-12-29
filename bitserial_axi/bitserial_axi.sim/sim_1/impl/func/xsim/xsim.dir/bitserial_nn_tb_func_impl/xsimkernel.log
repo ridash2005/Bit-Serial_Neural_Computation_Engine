@@ -1,4 +1,0 @@
-Running: xsim.dir/bitserial_nn_tb_func_impl/xsimk.exe -simmode gui -wdb bitserial_nn_tb_func_impl.wdb -simrunnum 0 -socket 59418
-Design successfully loaded
-Design Loading Memory Usage: 77236 KB (Peak: 77236 KB)
-Design Loading CPU Usage: 265 ms

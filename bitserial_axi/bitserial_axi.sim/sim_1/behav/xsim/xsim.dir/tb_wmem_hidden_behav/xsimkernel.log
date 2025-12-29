@@ -1,7 +1,0 @@
-Running: xsim.dir/tb_wmem_hidden_behav/xsimk.exe -simmode gui -wdb tb_wmem_hidden_behav.wdb -simrunnum 0 -socket 58452
-Design successfully loaded
-Design Loading Memory Usage: 10800 KB (Peak: 10800 KB)
-Design Loading CPU Usage: 77 ms
-Simulation completed
-Simulation Memory Usage: 11748 KB (Peak: 11748 KB)
-Simulation CPU Usage: 187 ms

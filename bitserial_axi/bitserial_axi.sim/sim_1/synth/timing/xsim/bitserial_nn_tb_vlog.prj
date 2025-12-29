@@ -1,9 +1,0 @@
-# compile verilog/system verilog design source files
-verilog xil_defaultlib  --include "../../../../../../../../APPS/Xilinx/2025.1/Vivado/data/rsb/busdef" \
-"bitserial_nn_tb_time_synth.v" \
-
-sv xil_defaultlib  --include "../../../../../../../../APPS/Xilinx/2025.1/Vivado/data/rsb/busdef" \
-"../../../../../bitserial_axi.srcs/sim_1/imports/src/bitserial_nn/tb_bitserial_nn.sv" \
-
-# Do not sort compile order
-nosort
