@@ -3,15 +3,16 @@
 module tb_relu_activation;
 
    
-    // 1. Configuration & Signal Declaration
+    // Configuration & Signal Declaration
 
     parameter int ACC_W = 16; // Using 16 bits for easier readability in logs
-                              // (DUT defaults to 40, both work fine)
+                              // (DUT defaults to 64, both work fine)
 
     logic                     clk;
     logic                     rst_n;
     logic signed [ACC_W-1:0]  in_data;
     logic                     in_valid;
+    logic                     out_ready;
     logic signed [ACC_W-1:0]  out_data;
     logic                     out_valid;
 
@@ -31,6 +32,7 @@ module tb_relu_activation;
         .rst_n    (rst_n),
         .in_data  (in_data),
         .in_valid (in_valid),
+        .out_ready(out_ready), 
         .out_data (out_data),
         .out_valid(out_valid)
     );
@@ -47,23 +49,32 @@ module tb_relu_activation;
     // 4. Scoreboard / Monitor (Self-Checking Logic)
     
     // INPUT MONITOR: Capture what goes IN, calculate expected ReLU, push to queue
+    // FIXED: Only push when DUT actually accepts the input
+    // DUT accepts when: (out_ready || !out_valid) && in_valid
     always @(posedge clk) begin
         if (rst_n && in_valid) begin
-            logic signed [ACC_W-1:0] expected_val;
+            // Check if DUT can accept input (same logic as RTL)
+            logic can_accept;
+            can_accept = out_ready || !out_valid;
             
-            // The Golden Logic (ReLU)
-            if (in_data < 0) 
-                expected_val = '0;
-            else 
-                expected_val = in_data;
+            if (can_accept) begin
+                logic signed [ACC_W-1:0] expected_val;
+                
+                // The Golden Logic (ReLU)
+                if (in_data < 0) 
+                    expected_val = '0;
+                else 
+                    expected_val = in_data;
 
-            expected_queue.push_back(expected_val);
+                expected_queue.push_back(expected_val);
+            end
         end
     end
 
     // OUTPUT MONITOR: Capture what comes OUT, pop from queue, compare
+    // Only pop when handshake completes (out_valid && out_ready)
     always @(posedge clk) begin
-        if (rst_n && out_valid) begin
+        if (rst_n && out_valid && out_ready) begin 
             logic signed [ACC_W-1:0] expected_pop;
             
             if (expected_queue.size() == 0) begin
@@ -98,9 +109,10 @@ module tb_relu_activation;
         $display("---------------------------------------------------");
 
         // Initialize inputs
-        rst_n    = 0;
-        in_valid = 0;
-        in_data  = 0;
+        rst_n     = 0;
+        in_valid  = 0;
+        in_data   = 0;
+        out_ready = 1;  // ADDED: Initialize out_ready (always ready for now)
 
         // Apply Reset
         repeat(5) @(posedge clk);
@@ -147,6 +159,28 @@ module tb_relu_activation;
         
         repeat(10) @(posedge clk); // Drain pipeline
 
+
+        // --- TEST CASE 4: Backpressure Test ---
+        $display("\n--- Test Case 4: Backpressure (out_ready toggling) ---");
+        fork
+            begin
+                // Send 10 values
+                repeat(10) begin
+                    drive_single_input($urandom());
+                    repeat($urandom_range(0, 2)) @(posedge clk);
+                end
+            end
+            begin
+                // Randomly assert/deassert out_ready
+                repeat(30) begin
+                    out_ready <= $urandom_range(0, 1);
+                    @(posedge clk);
+                end
+                out_ready <= 1; // Restore to always ready
+            end
+        join
+        
+        repeat(10) @(posedge clk); // Drain
 
 
         // End of Simulation

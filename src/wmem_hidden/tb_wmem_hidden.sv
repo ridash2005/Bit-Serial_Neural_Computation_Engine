@@ -2,16 +2,16 @@
 
 module tb_wmem_hidden;
 
-    // 1. Parameters & Signals
+    // Parameters & Signals
 
     parameter int DATA_W   = 16;
     parameter int N_IN     = 8;  
     parameter int N_HIDDEN = 4;
     
     localparam int WMEM_SIZE = N_HIDDEN * N_IN;
-    localparam int ADDR_H_W  = $clog2(N_HIDDEN);
-    localparam int ADDR_I_W  = $clog2(N_IN);
-    localparam int RADDR_W   = $clog2(WMEM_SIZE);
+    localparam int ADDR_H_W  = $clog2((N_HIDDEN>1)?N_HIDDEN:2);
+    localparam int ADDR_I_W  = $clog2((N_IN>1)?N_IN:2);
+    localparam int RADDR_W   = $clog2((WMEM_SIZE>1)?WMEM_SIZE:2);
 
     logic clk;
     logic rst_n;
@@ -29,8 +29,8 @@ module tb_wmem_hidden;
     // Scoreboard: A local array to mimic expected memory state
     logic signed [DATA_W-1:0] shadow_mem [WMEM_SIZE];
     
-     int error_count = 0;
-
+    int error_count = 0;
+    int rh=0, ri=0, rval=0, addr_flat=0;  
 
     // 2. DUT Instantiation
 
@@ -52,8 +52,8 @@ module tb_wmem_hidden;
     // 4. Test Stimulus
 
     initial begin
-        $dumpfile("wmem_dump.vcd");
-        $dumpvars(0, tb_wmem_hidden);
+        //$dumpfile("wmem_dump.vcd");
+        //$dumpvars(0, tb_wmem_hidden);
 
         // Initialize signals
         rst_n    = 0;
@@ -77,11 +77,8 @@ module tb_wmem_hidden;
                 write_weight(h, i, $signed(h*10 + i + 1));
             end
         end
-        w_wr_en <= 0; // Stop writing
 
-    
-        // We must wait for the last write to actually propagate into the BRAM array
-        // before we attempt to read it back.
+        // Allow final writes to complete
         repeat(2) @(posedge clk);
 
         // --- TEST 2: Verify Read Latency and Data ---
@@ -93,60 +90,87 @@ module tb_wmem_hidden;
         // --- TEST 3: Random Access Write/Read ---
         $display("--- Test 3: Random Access ---");
         repeat(15) begin
-            // Explicitly automatic to ensure local scope in loop iterations
-            automatic int rh   = $urandom_range(0, N_HIDDEN-1);
-            automatic int ri   = $urandom_range(0, N_IN-1);
-            automatic int rval = $urandom_range(-500, 500);
+              rh   = $urandom_range(0, N_HIDDEN-1);
+              ri   = $urandom_range(0, N_IN-1);
+              rval = $urandom_range(-500, 500);
+              addr_flat = rh * N_IN + ri;
             
-            write_weight(rh, ri, $signed(rval));
+            $display("[Time %0t] Writing to [h=%0d, i=%0d] addr=%0d value=%0d", 
+                     $time, rh, ri, addr_flat, rval);
             
-            // Allow pipeline to settle
-            repeat(2) @(posedge clk);
-            
-            check_read(rh * N_IN + ri);
+            write_weight(rh, ri, rval);
+
+            check_read(addr_flat);
         end
 
-        $display("\nAll simulations complete. Total Errors: %0d", error_count); // Assuming error_count logic added or just check logs
+        // --- TEST 4: Back-to-back writes to same location ---
+        $display("--- Test 4: Overwrite Test ---");
+        write_weight(0, 0, 100);
+        write_weight(0, 0, 200);
+        write_weight(0, 0, 300);
+        repeat(2) @(posedge clk);
+        check_read(0); // Should read 300
+
+        // --- TEST 5: Write and immediate read to different addresses ---
+        $display("--- Test 5: Concurrent Access Test ---");
+        write_weight(1, 1, 111);
+        // Start reading from different address while write completes
+        check_read(2 * N_IN + 2);
+        check_read(1 * N_IN + 1); // Now read the address we just wrote
+
+        // Final Report
+        $display("\n========================================");
+        if (error_count == 0) begin
+            $display("All tests PASSED!");
+        end else begin
+            $display("Tests FAILED with %0d errors", error_count);
+        end
+        $display("========================================\n");
+        
         $finish;
     end
 
 
-    // Helper Tasks (Declared Automatic)
+    // Helper Tasks
 
-    // Corrected to handle the piped data write
+    // Properly handle 2-cycle write pipeline delay
     task automatic write_weight(
         input [ADDR_H_W-1:0] h, 
         input [ADDR_I_W-1:0] i, 
         input signed [DATA_W-1:0] data
     );
+        automatic int flat_addr = h * N_IN + i;
         begin
+            // Cycle 0: Apply write inputs
             w_addr_h <= h;
             w_addr_i <= i;
             w_data   <= data; 
             w_wr_en  <= 1;
             
-            // Update shadow memory: 
-            // We store 'data' because even though it's delayed in the DUT, 
-            // it will eventually reach this address.
-            shadow_mem[h * N_IN + i] = data;
-
-            @(posedge clk);
-            w_wr_en <= 0; // Pulse write enable
+            @(posedge clk);  // Cycle 1: Data enters pipeline registers (w_data_reg, etc.)
+            w_wr_en <= 0;    // De-assert write enable
+            
+            @(posedge clk);  // Cycle 2: Data is written to mem[]
+            
+            // Now update shadow memory to reflect the completed write
+            shadow_mem[flat_addr] = data;
+            
+            $display("[Time %0t] Write completed: Addr %0d = %h", $time, flat_addr, data);
         end
     endtask
 
-    // Corrected for Synchronous BRAM Read (1-cycle delay)
+    // Properly handle synchronous BRAM read with 1-cycle latency
     task automatic check_read(input [RADDR_W-1:0] addr);
         logic signed [DATA_W-1:0] expected;
         begin
-            raddr <= addr;      // Set address
             expected = shadow_mem[addr];
+            raddr <= addr;      // Apply read address
             
-            @(posedge clk);     // BRAM Latency: Wait 1 cycle for rdata to update
-            #1;                 // Small offset to sample values after the clock edge
+            @(posedge clk);     // Wait 1 cycle for BRAM read latency
+            #1;                 // Small delta delay to sample after clock edge
             
             if (rdata !== expected) begin
-                $error("[Time %0t] Read Mismatch at Addr %0d! Exp: %h, Got: %h", 
+                $error("[Time %0t] Read Mismatch at Addr %0d! Expected: %h, Got: %h", 
                         $time, addr, expected, rdata);
                 error_count++;
             end else begin
