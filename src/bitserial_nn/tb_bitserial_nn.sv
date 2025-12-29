@@ -6,8 +6,8 @@ module bitserial_nn_tb;
   // Parameters (MATCH DUT)
    
   localparam int DATA_W    = 16;
-  localparam int N_IN      = 128;
-  localparam int N_HIDDEN  = 64;
+  localparam int N_IN      = 256;
+  localparam int N_HIDDEN  = 128;
   localparam int P         = 4;
   localparam int PRECISION = DATA_W;
 
@@ -52,7 +52,7 @@ module bitserial_nn_tb;
   logic busy;
 
    
-  // DUT instantiation
+  // DUT instantiation (EXACT MATCH)
    
   bitserial_nn #(
     .DATA_W(DATA_W),
@@ -135,26 +135,27 @@ module bitserial_nn_tb;
    
   // AXI input stream task
    
-  task stream_input_vector(input int base);
-    int i;
-    begin
-      $display("[TB] Streaming input vector...");
-      for (i = 0; i < N_IN; i++) begin
-        // wait for ready
-        while (!s_axis_tready) @(posedge clk);
+    task stream_input_vector(input int base);
+  int i;
+  begin
+    $display("[TB] Streaming input vector...");
+    for (i = 0; i < N_IN; i++) begin
 
-        s_axis_tvalid <= 1;
-        s_axis_tdata  <= $signed(base + i);
-        s_axis_tlast  <= (i == N_IN-1);
+      s_axis_tdata  <= $signed(base + i);
+      s_axis_tlast  <= (i == N_IN-1);
+      s_axis_tvalid <= 1;
 
-        @(posedge clk);
+      // WAIT FOR REAL HANDSHAKE
+      do @(posedge clk);
+      while (!(s_axis_tvalid && s_axis_tready));
 
-        s_axis_tvalid <= 0;
-        s_axis_tlast  <= 0;
-      end
-      $display("[TB] Input streaming done");
+      // Deassert after handshake
+      s_axis_tvalid <= 0;
+      s_axis_tlast  <= 0;
     end
-  endtask
+    $display("[TB] Input streaming done");
+  end
+endtask
 
    
   // Main stimulus
@@ -204,7 +205,7 @@ module bitserial_nn_tb;
                  m_axis_tlast);
 
         if (m_axis_tdata !== golden_out[recv_count]) begin
-          $fatal(1, "[FAIL] Mismatch at H=%0d", recv_count);
+          $error(1, "[FAIL] Mismatch at H=%0d", recv_count);
         end
 
         recv_count++;
@@ -214,7 +215,7 @@ module bitserial_nn_tb;
     if (recv_count == N_HIDDEN)
       $display("[TB] ✅ SUCCESS: All outputs matched");
     else
-      $fatal(1, "[TB] ❌ TIMEOUT");
+      $error(1, "[TB] ❌ TIMEOUT");
 
     repeat (10) @(posedge clk);
     $finish;

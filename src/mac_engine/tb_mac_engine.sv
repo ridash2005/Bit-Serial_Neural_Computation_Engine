@@ -242,9 +242,9 @@ module tb_mac_engine;
         $display("[TB] ==============================\n");
     endtask
 
-     ================
+
     // 8. Main Test Sequence
-     ================
+
     initial begin
         $dumpfile("dump.vcd");
         $dumpvars(0, tb_mac_engine);
@@ -264,9 +264,9 @@ module tb_mac_engine;
         rst_n = 1;
         repeat(2) @(posedge clk);
         
-         ============
+ 
         // TEST 1: Known values (hand-calculated results)
-         ============
+
         begin
            automatic logic signed [DATA_W-1:0] test_in[N_IN] = '{2, 3, -1, 4};
            automatic logic signed [DATA_W-1:0] test_wt[N_HIDDEN][N_IN] = '{

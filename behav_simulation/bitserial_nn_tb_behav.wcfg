@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="bitserial_nn_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="bitserial_nn_tb" />
+            <top_module name="glbl" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000000 us"></ZoomStartTime>
+      <ZoomEndTime time="596.025001 us"></ZoomEndTime>
+      <Cursor1Time time="596.025000 us"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="139"></NameColumnWidth>
+      <ValueColumnWidth column_width="128"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="25" />
+   <wvobject fp_name="/bitserial_nn_tb/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/rst_n" type="logic">
+      <obj_property name="ElementShortName">rst_n</obj_property>
+      <obj_property name="ObjectShortName">rst_n</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/s_axis_tdata" type="array">
+      <obj_property name="ElementShortName">s_axis_tdata[15:0]</obj_property>
+      <obj_property name="ObjectShortName">s_axis_tdata[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/s_axis_tvalid" type="logic">
+      <obj_property name="ElementShortName">s_axis_tvalid</obj_property>
+      <obj_property name="ObjectShortName">s_axis_tvalid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/s_axis_tready" type="logic">
+      <obj_property name="ElementShortName">s_axis_tready</obj_property>
+      <obj_property name="ObjectShortName">s_axis_tready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/s_axis_tlast" type="logic">
+      <obj_property name="ElementShortName">s_axis_tlast</obj_property>
+      <obj_property name="ObjectShortName">s_axis_tlast</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/m_axis_tdata" type="array">
+      <obj_property name="ElementShortName">m_axis_tdata[38:0]</obj_property>
+      <obj_property name="ObjectShortName">m_axis_tdata[38:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/m_axis_tvalid" type="logic">
+      <obj_property name="ElementShortName">m_axis_tvalid</obj_property>
+      <obj_property name="ObjectShortName">m_axis_tvalid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/m_axis_tready" type="logic">
+      <obj_property name="ElementShortName">m_axis_tready</obj_property>
+      <obj_property name="ObjectShortName">m_axis_tready</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/m_axis_tlast" type="logic">
+      <obj_property name="ElementShortName">m_axis_tlast</obj_property>
+      <obj_property name="ObjectShortName">m_axis_tlast</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/w_wr_en" type="logic">
+      <obj_property name="ElementShortName">w_wr_en</obj_property>
+      <obj_property name="ObjectShortName">w_wr_en</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/w_addr_h" type="array">
+      <obj_property name="ElementShortName">w_addr_h[5:0]</obj_property>
+      <obj_property name="ObjectShortName">w_addr_h[5:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/w_addr_i" type="array">
+      <obj_property name="ElementShortName">w_addr_i[6:0]</obj_property>
+      <obj_property name="ObjectShortName">w_addr_i[6:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/w_data" type="array">
+      <obj_property name="ElementShortName">w_data[15:0]</obj_property>
+      <obj_property name="ObjectShortName">w_data[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/busy" type="logic">
+      <obj_property name="ElementShortName">busy</obj_property>
+      <obj_property name="ObjectShortName">busy</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/golden_out" type="array">
+      <obj_property name="ElementShortName">golden_out[0:63][38:0]</obj_property>
+      <obj_property name="ObjectShortName">golden_out[0:63][38:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/recv_count" type="array">
+      <obj_property name="ElementShortName">recv_count[31:0]</obj_property>
+      <obj_property name="ObjectShortName">recv_count[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/timeout" type="array">
+      <obj_property name="ElementShortName">timeout[31:0]</obj_property>
+      <obj_property name="ObjectShortName">timeout[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/DATA_W" type="array">
+      <obj_property name="ElementShortName">DATA_W[31:0]</obj_property>
+      <obj_property name="ObjectShortName">DATA_W[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/N_IN" type="array">
+      <obj_property name="ElementShortName">N_IN[31:0]</obj_property>
+      <obj_property name="ObjectShortName">N_IN[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/N_HIDDEN" type="array">
+      <obj_property name="ElementShortName">N_HIDDEN[31:0]</obj_property>
+      <obj_property name="ObjectShortName">N_HIDDEN[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/P" type="array">
+      <obj_property name="ElementShortName">P[31:0]</obj_property>
+      <obj_property name="ObjectShortName">P[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/PRECISION" type="array">
+      <obj_property name="ElementShortName">PRECISION[31:0]</obj_property>
+      <obj_property name="ObjectShortName">PRECISION[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/ACC_W" type="array">
+      <obj_property name="ElementShortName">ACC_W[31:0]</obj_property>
+      <obj_property name="ObjectShortName">ACC_W[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/bitserial_nn_tb/WMEM_SIZE" type="array">
+      <obj_property name="ElementShortName">WMEM_SIZE[31:0]</obj_property>
+      <obj_property name="ObjectShortName">WMEM_SIZE[31:0]</obj_property>
+   </wvobject>
+</wave_config>
