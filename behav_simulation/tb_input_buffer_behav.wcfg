@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_input_buffer_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="tb_input_buffer" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="755.001 ns"></ZoomEndTime>
+      <Cursor1Time time="755.000 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="139"></NameColumnWidth>
+      <ValueColumnWidth column_width="124"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="14" />
+   <wvobject fp_name="/tb_input_buffer/clk" type="logic">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_input_buffer/rst_n" type="logic">
+      <obj_property name="ElementShortName">rst_n</obj_property>
+      <obj_property name="ObjectShortName">rst_n</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_input_buffer/data_in" type="array">
+      <obj_property name="ElementShortName">data_in[15:0]</obj_property>
+      <obj_property name="ObjectShortName">data_in[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_input_buffer/data_in_valid" type="logic">
+      <obj_property name="ElementShortName">data_in_valid</obj_property>
+      <obj_property name="ObjectShortName">data_in_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_input_buffer/vector_last" type="logic">
+      <obj_property name="ElementShortName">vector_last</obj_property>
+      <obj_property name="ObjectShortName">vector_last</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_input_buffer/busy" type="logic">
+      <obj_property name="ElementShortName">busy</obj_property>
+      <obj_property name="ObjectShortName">busy</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_input_buffer/invec_bus" type="array">
+      <obj_property name="ElementShortName">invec_bus[127:0]</obj_property>
+      <obj_property name="ObjectShortName">invec_bus[127:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_input_buffer/vector_done" type="logic">
+      <obj_property name="ElementShortName">vector_done</obj_property>
+      <obj_property name="ObjectShortName">vector_done</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_input_buffer/error_count" type="array">
+      <obj_property name="ElementShortName">error_count[31:0]</obj_property>
+      <obj_property name="ObjectShortName">error_count[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_input_buffer/vector_count" type="array">
+      <obj_property name="ElementShortName">vector_count[31:0]</obj_property>
+      <obj_property name="ObjectShortName">vector_count[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_input_buffer/current_vector" type="array">
+      <obj_property name="ElementShortName">current_vector[0:7][15:0]</obj_property>
+      <obj_property name="ObjectShortName">current_vector[0:7][15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_input_buffer/current_word_idx" type="array">
+      <obj_property name="ElementShortName">current_word_idx[31:0]</obj_property>
+      <obj_property name="ObjectShortName">current_word_idx[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_input_buffer/DATA_W" type="array">
+      <obj_property name="ElementShortName">DATA_W[31:0]</obj_property>
+      <obj_property name="ObjectShortName">DATA_W[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_input_buffer/N_IN" type="array">
+      <obj_property name="ElementShortName">N_IN[31:0]</obj_property>
+      <obj_property name="ObjectShortName">N_IN[31:0]</obj_property>
+   </wvobject>
+</wave_config>

@@ -1,0 +1,9 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.sim/sim_1/synth/func/xsim/bitserial_nn_tb_func_synth.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module bitserial_nn
+INFO: [VRFC 10-311] analyzing module input_buffer
+INFO: [VRFC 10-311] analyzing module mac_engine
+INFO: [VRFC 10-311] analyzing module relu_activation
+INFO: [VRFC 10-311] analyzing module wmem_hidden
+INFO: [VRFC 10-311] analyzing module glbl
+INFO: [VRFC 10-2263] Analyzing SystemVerilog file "D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/sim_1/imports/src/bitserial_nn/tb_bitserial_nn.sv" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module bitserial_nn_tb

@@ -1,0 +1,13 @@
+Vivado Simulator v2025.1.0
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/APPS/Xilinx/2025.1/Vivado/bin/unwrapped/win64.o/xelab.exe --incr --debug typical --relax --mt 2 --maxdelay -L xil_defaultlib -L uvm -L simprims_ver -L secureip --snapshot bitserial_nn_tb_time_synth -transport_int_delays -pulse_r 0 -pulse_int_r 0 -pulse_e 0 -pulse_int_e 0 xil_defaultlib.bitserial_nn_tb xil_defaultlib.glbl -log elaborate.log 
+Using 2 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+WARNING: [VRFC 10-2861] module 'bitserial_nn' does not have a parameter named DATA_W [D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/sim_1/imports/src/bitserial_nn/tb_bitserial_nn.sv:58]
+WARNING: [VRFC 10-2861] module 'bitserial_nn' does not have a parameter named PRECISION [D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/sim_1/imports/src/bitserial_nn/tb_bitserial_nn.sv:59]
+WARNING: [VRFC 10-2861] module 'bitserial_nn' does not have a parameter named N_IN [D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/sim_1/imports/src/bitserial_nn/tb_bitserial_nn.sv:60]
+WARNING: [VRFC 10-2861] module 'bitserial_nn' does not have a parameter named N_HIDDEN [D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/sim_1/imports/src/bitserial_nn/tb_bitserial_nn.sv:61]
+WARNING: [VRFC 10-2861] module 'bitserial_nn' does not have a parameter named P [D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/sim_1/imports/src/bitserial_nn/tb_bitserial_nn.sv:62]
+Completed static elaboration

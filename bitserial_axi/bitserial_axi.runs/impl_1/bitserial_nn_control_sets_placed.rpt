@@ -1,0 +1,397 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.1 (win64) Build 6140274 Thu May 22 00:12:29 MDT 2025
+| Date         : Mon Dec 29 12:47:45 2025
+| Host         : Rickarya running 64-bit major release  (build 9200)
+| Command      : report_control_sets -verbose -file bitserial_nn_control_sets_placed.rpt
+| Design       : bitserial_nn
+| Device       : xcau7p
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Control Set Information
+
+Table of Contents
+-----------------
+1. Summary
+2. Histogram
+3. Flip-Flop Distribution
+4. Detailed Control Set Information
+
+1. Summary
+----------
+
++----------------------------------------------------------+-------+
+|                          Status                          | Count |
++----------------------------------------------------------+-------+
+| Total control sets                                       |   319 |
+|    Minimum number of control sets                        |   319 |
+|    Addition due to synthesis replication                 |     0 |
+|    Addition due to physical synthesis replication        |     0 |
+| Unused register locations in slices containing registers |    11 |
++----------------------------------------------------------+-------+
+* Control sets can be merged at opt_design using control_set_merge or merge_equivalent_drivers
+** Run report_qor_suggestions for automated merging and remapping suggestions
+
+
+2. Histogram
+------------
+
++--------------------+-------+
+|       Fanout       | Count |
++--------------------+-------+
+| Total control sets |   319 |
+| >= 0 to < 4        |     1 |
+| >= 4 to < 6        |     1 |
+| >= 6 to < 8        |     1 |
+| >= 8 to < 10       |     1 |
+| >= 10 to < 12      |     0 |
+| >= 12 to < 14      |     1 |
+| >= 14 to < 16      |     1 |
+| >= 16              |   313 |
++--------------------+-------+
+* Control sets can be remapped at either synth_design or opt_design
+
+
+3. Flip-Flop Distribution
+-------------------------
+
++--------------+-----------------------+------------------------+-----------------+--------------+
+| Clock Enable | Synchronous Set/Reset | Asynchronous Set/Reset | Total Registers | Total Slices |
++--------------+-----------------------+------------------------+-----------------+--------------+
+| No           | No                    | No                     |               1 |            1 |
+| No           | No                    | Yes                    |               0 |            0 |
+| No           | Yes                   | No                     |              79 |           29 |
+| Yes          | No                    | No                     |               0 |            0 |
+| Yes          | No                    | Yes                    |               0 |            0 |
+| Yes          | Yes                   | No                     |            9725 |         2014 |
++--------------+-----------------------+------------------------+-----------------+--------------+
+
+
+4. Detailed Control Set Information
+-----------------------------------
+
++----------------+--------------------------------------------+----------------------------------+------------------+----------------+--------------+
+|  Clock Signal  |                Enable Signal               |         Set/Reset Signal         | Slice Load Count | Bel Load Count | Bels / Slice |
++----------------+--------------------------------------------+----------------------------------+------------------+----------------+--------------+
+|  clk_IBUF_BUFG |                                            |                                  |                1 |              1 |         1.00 |
+|  clk_IBUF_BUFG | u_mac_engine/bit_idx                       | rst_n_IBUF_inst/O                |                3 |              4 |         1.33 |
+|  clk_IBUF_BUFG | u_relu_activation/E[0]                     | rst_n_IBUF_inst/O                |                2 |              7 |         3.50 |
+|  clk_IBUF_BUFG | u_mac_engine/out_index[7]_i_1_n_0          | rst_n_IBUF_inst/O                |                3 |              8 |         2.67 |
+|  clk_IBUF_BUFG | u_mac_engine/wr_ptr01_out                  | u_input_buffer/wr_ptr[7]_i_1_n_0 |                4 |             13 |         3.25 |
+|  clk_IBUF_BUFG | u_mac_engine/mem_lane                      | rst_n_IBUF_inst/O                |                8 |             15 |         1.88 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[44][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[49][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[76][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[96][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[92][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_mac_engine/abs_b[1][15]_i_1_n_0          | rst_n_IBUF_inst/O                |                2 |             16 |         8.00 |
+|  clk_IBUF_BUFG | u_mac_engine/abs_b[2][15]_i_1_n_0          | rst_n_IBUF_inst/O                |                2 |             16 |         8.00 |
+|  clk_IBUF_BUFG | u_mac_engine/a_val                         | rst_n_IBUF_inst/O                |               16 |             16 |         1.00 |
+|  clk_IBUF_BUFG | u_mac_engine/abs_b                         | rst_n_IBUF_inst/O                |                2 |             16 |         8.00 |
+|  clk_IBUF_BUFG | u_mac_engine/abs_b[3][15]_i_1_n_0          | rst_n_IBUF_inst/O                |                3 |             16 |         5.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[98][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[95][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[93][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[91][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[97][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[9][15]_i_1_n_0        | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[94][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[99][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[112][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[113][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[123][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[124][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[125][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf                       | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[104][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[118][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[103][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[105][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[111][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[115][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[116][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[11][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[120][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[109][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[117][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[100][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[110][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[107][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               13 |             16 |         1.23 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[106][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[102][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[119][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[10][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[121][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[114][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[122][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[101][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[108][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[130][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[152][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[136][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[129][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[148][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[126][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[135][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                6 |             16 |         2.67 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[144][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[150][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[151][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[154][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[139][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                6 |             16 |         2.67 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[143][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[155][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[156][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[157][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[145][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[131][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[142][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[146][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[149][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[158][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[159][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[160][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[14][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[161][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[15][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                6 |             16 |         2.67 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[162][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[147][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[132][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[163][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[164][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[165][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[134][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[166][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[128][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[167][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[12][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[153][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[127][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[133][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[137][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[138][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[140][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[13][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[141][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[187][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[207][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               13 |             16 |         1.23 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[182][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[190][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[191][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[176][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[210][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[211][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[186][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[203][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[214][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[218][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[219][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[196][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[183][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[174][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[16][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[179][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[185][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[188][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[184][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[198][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[1][15]_i_1_n_0        | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[200][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[201][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[202][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[215][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[217][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[206][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[221][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[222][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[194][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[168][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[195][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[216][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[172][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[178][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[171][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               13 |             16 |         1.23 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[189][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[193][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[19][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[209][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               13 |             16 |         1.23 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[212][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[213][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               13 |             16 |         1.23 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[21][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[220][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[169][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[197][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[175][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[180][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[18][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[20][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[181][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[204][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[170][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[177][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[17][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[192][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[173][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[199][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[205][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[208][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                5 |             16 |         3.20 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[237][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[244][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               13 |             16 |         1.23 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[240][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[251][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               13 |             16 |         1.23 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[23][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                5 |             16 |         3.20 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[230][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[234][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[252][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[246][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               13 |             16 |         1.23 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[225][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[22][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[239][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[228][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[231][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[24][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[30][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[31][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[243][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               13 |             16 |         1.23 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[245][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[255][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[32][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                6 |             16 |         2.67 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[26][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[34][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[36][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[37][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[38][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[3][15]_i_1_n_0        | rst_n_IBUF_inst/O                |                6 |             16 |         2.67 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[29][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[253][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[226][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[235][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[224][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[236][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[242][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[233][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[28][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[2][15]_i_1_n_0        | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[232][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[250][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               13 |             16 |         1.23 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[35][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[229][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[227][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[248][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[254][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               13 |             16 |         1.23 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[33][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[39][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[247][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               13 |             16 |         1.23 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[223][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[40][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[25][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[241][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[238][15]_i_1_n_0      | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[41][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[249][15]_i_1_n_0      | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[27][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                6 |             16 |         2.67 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[61][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[74][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[87][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[53][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[66][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[52][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[79][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[64][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               14 |             16 |         1.14 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[63][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[68][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[71][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[75][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[51][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[58][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[85][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                6 |             16 |         2.67 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[67][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[50][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[60][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[62][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[70][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[48][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[6][15]_i_1_n_0        | rst_n_IBUF_inst/O                |                7 |             16 |         2.29 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[77][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[42][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                6 |             16 |         2.67 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[7][15]_i_1_n_0        | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[82][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[83][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[45][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[4][15]_i_1_n_0        | rst_n_IBUF_inst/O                |               12 |             16 |         1.33 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[55][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[57][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[78][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[47][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[43][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                5 |             16 |         3.20 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[84][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[86][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[88][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[89][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[8][15]_i_1_n_0        | rst_n_IBUF_inst/O                |                6 |             16 |         2.67 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[73][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[90][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[5][15]_i_1_n_0        | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[46][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[69][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               10 |             16 |         1.60 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[72][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               13 |             16 |         1.23 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[65][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[80][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                8 |             16 |         2.00 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[59][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[81][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[54][15]_i_1_n_0       | rst_n_IBUF_inst/O                |               11 |             16 |         1.45 |
+|  clk_IBUF_BUFG | u_input_buffer/inbuf[56][15]_i_1_n_0       | rst_n_IBUF_inst/O                |                9 |             16 |         1.78 |
+|  clk_IBUF_BUFG | u_mac_engine/cur_hidden[2]_i_1_n_0         | rst_n_IBUF_inst/O                |               11 |             36 |         3.27 |
+|  clk_IBUF_BUFG | u_mac_engine/cur_input0                    | rst_n_IBUF_inst/O                |                9 |             38 |         4.22 |
+|  clk_IBUF_BUFG | u_mac_engine/partial[1][39]_i_1_n_0        | rst_n_IBUF_inst/O                |                8 |             40 |         5.00 |
+|  clk_IBUF_BUFG | u_mac_engine/partial[2][39]_i_1_n_0        | rst_n_IBUF_inst/O                |                7 |             40 |         5.71 |
+|  clk_IBUF_BUFG | u_mac_engine/partial[3][39]_i_1_n_0        | rst_n_IBUF_inst/O                |                7 |             40 |         5.71 |
+|  clk_IBUF_BUFG | u_relu_activation/out_data_reg             | u_mac_engine/SR[0]               |               16 |             40 |         2.50 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[5][39]_i_1_n_0   | rst_n_IBUF_inst/O                |               28 |             40 |         1.43 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[0][39]_i_1_n_0   | rst_n_IBUF_inst/O                |               40 |             40 |         1.00 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[96][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               40 |             40 |         1.00 |
+|  clk_IBUF_BUFG | u_mac_engine/out_data[39]_i_1_n_0          | rst_n_IBUF_inst/O                |               38 |             40 |         1.05 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[108][39]_i_1_n_0 | rst_n_IBUF_inst/O                |               39 |             40 |         1.03 |
+|  clk_IBUF_BUFG | u_mac_engine/partial                       | rst_n_IBUF_inst/O                |                9 |             40 |         4.44 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[24][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               40 |             40 |         1.00 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[4][39]_i_1_n_0   | rst_n_IBUF_inst/O                |               40 |             40 |         1.00 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[123][39]_i_1_n_0 | rst_n_IBUF_inst/O                |               32 |             40 |         1.25 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[50][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               36 |             40 |         1.11 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[68][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               40 |             40 |         1.00 |
+|  clk_IBUF_BUFG | u_mac_engine/out_mem_index[6]_i_1_n_0      | rst_n_IBUF_inst/O                |               29 |             68 |         2.34 |
+|  clk_IBUF_BUFG |                                            | rst_n_IBUF_inst/O                |               29 |             79 |         2.72 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[10][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               41 |             80 |         1.95 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[6][39]_i_1_n_0   | rst_n_IBUF_inst/O                |               36 |             80 |         2.22 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[8][39]_i_1_n_0   | rst_n_IBUF_inst/O                |               73 |             80 |         1.10 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[1][39]_i_1_n_0   | rst_n_IBUF_inst/O                |               70 |            120 |         1.71 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[25][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               53 |            120 |         2.26 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[109][39]_i_1_n_0 | rst_n_IBUF_inst/O                |               58 |            120 |         2.07 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[121][39]_i_1_n_0 | rst_n_IBUF_inst/O                |               93 |            120 |         1.29 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[48][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               87 |            120 |         1.38 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[71][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               61 |            120 |         1.97 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[97][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               61 |            120 |         1.97 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[29][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               91 |            160 |         1.76 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[32][39]_i_1_n_0  | rst_n_IBUF_inst/O                |              100 |            160 |         1.60 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[36][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               89 |            160 |         1.80 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[44][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               93 |            160 |         1.72 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[62][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               93 |            160 |         1.72 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[67][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               97 |            160 |         1.65 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[104][39]_i_1_n_0 | rst_n_IBUF_inst/O                |               91 |            160 |         1.76 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[102][39]_i_1_n_0 | rst_n_IBUF_inst/O                |              100 |            160 |         1.60 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[124][39]_i_1_n_0 | rst_n_IBUF_inst/O                |               89 |            160 |         1.80 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[74][39]_i_1_n_0  | rst_n_IBUF_inst/O                |              100 |            160 |         1.60 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[57][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               90 |            160 |         1.78 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[80][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               95 |            160 |         1.68 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[84][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               93 |            160 |         1.72 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[13][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               87 |            160 |         1.84 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[92][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               97 |            160 |         1.65 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[91][39]_i_1_n_0  | rst_n_IBUF_inst/O                |              100 |            160 |         1.60 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[17][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               96 |            160 |         1.67 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[40][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               94 |            160 |         1.70 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[116][39]_i_1_n_0 | rst_n_IBUF_inst/O                |              101 |            160 |         1.58 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[55][39]_i_1_n_0  | rst_n_IBUF_inst/O                |              100 |            160 |         1.60 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[113][39]_i_1_n_0 | rst_n_IBUF_inst/O                |               90 |            160 |         1.78 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[23][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               78 |            160 |         2.05 |
+|  clk_IBUF_BUFG | u_mac_engine/hidden_accum[78][39]_i_1_n_0  | rst_n_IBUF_inst/O                |               89 |            160 |         1.80 |
++----------------+--------------------------------------------+----------------------------------+------------------+----------------+--------------+
+
+

@@ -1,0 +1,1 @@
+--incr --debug "typical" --relax --mt "2" -L "xil_defaultlib" -L "uvm" -L "unisims_ver" -L "unimacro_ver" -L "secureip" --snapshot "tb_wmem_hidden_behav" "xil_defaultlib.tb_wmem_hidden" "xil_defaultlib.glbl" -log "elaborate.log" 

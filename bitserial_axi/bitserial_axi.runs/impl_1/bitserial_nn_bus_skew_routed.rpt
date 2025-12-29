@@ -1,0 +1,17 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2025.1 (win64) Build 6140274 Thu May 22 00:12:29 MDT 2025
+| Date              : Mon Dec 29 12:56:45 2025
+| Host              : Rickarya running 64-bit major release  (build 9200)
+| Command           : report_bus_skew -warn_on_violation -file bitserial_nn_bus_skew_routed.rpt -pb bitserial_nn_bus_skew_routed.pb -rpx bitserial_nn_bus_skew_routed.rpx
+| Design            : bitserial_nn
+| Device            : xcau7p-fcva289
+| Speed File        : -1LV  PRODUCTION 1.04 04-20-2024
+| Design State      : Routed
+| Temperature Grade : I
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Bus Skew Report
+
+No bus skew constraints
+

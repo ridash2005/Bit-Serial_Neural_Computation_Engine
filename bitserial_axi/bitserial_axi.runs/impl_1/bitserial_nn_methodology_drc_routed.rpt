@@ -1,0 +1,735 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2025.1 (win64) Build 6140274 Thu May 22 00:12:29 MDT 2025
+| Date         : Mon Dec 29 12:55:42 2025
+| Host         : Rickarya running 64-bit major release  (build 9200)
+| Command      : report_methodology -file bitserial_nn_methodology_drc_routed.rpt -pb bitserial_nn_methodology_drc_routed.pb -rpx bitserial_nn_methodology_drc_routed.rpx
+| Design       : bitserial_nn
+| Device       : xcau7p-fcva289-1LV-i
+| Speed File   : -1LV
+| Design State : Fully Routed
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Report Methodology
+
+Table of Contents
+-----------------
+1. REPORT SUMMARY
+2. REPORT DETAILS
+
+1. REPORT SUMMARY
+-----------------
+            Netlist: netlist
+          Floorplan: design_1
+      Design limits: <entire design considered>
+             Max checks: <unlimited>
+             Checks found: 101
++---------+----------+--------------------------------------------+--------+
+| Rule    | Severity | Description                                | Checks |
++---------+----------+--------------------------------------------+--------+
+| SYNTH-6 | Warning  | Timing of a RAM block might be sub-optimal | 4      |
+| XDCH-2  | Warning  | Same min and max delay values on IO port   | 97     |
++---------+----------+--------------------------------------------+--------+
+
+2. REPORT DETAILS
+-----------------
+SYNTH-6#1 Warning
+Timing of a RAM block might be sub-optimal  
+The timing for the instance u_wmem_hidden/mem_reg_bram_11, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+Related violations: <none>
+
+SYNTH-6#2 Warning
+Timing of a RAM block might be sub-optimal  
+The timing for the instance u_wmem_hidden/mem_reg_bram_13, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+Related violations: <none>
+
+SYNTH-6#3 Warning
+Timing of a RAM block might be sub-optimal  
+The timing for the instance u_wmem_hidden/mem_reg_bram_14, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+Related violations: <none>
+
+SYNTH-6#4 Warning
+Timing of a RAM block might be sub-optimal  
+The timing for the instance u_wmem_hidden/mem_reg_bram_7, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+Related violations: <none>
+
+XDCH-2#1 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'clk' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#2 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'm_axis_tready' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#3 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'rst_n' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#4 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tdata[0]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#5 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tdata[10]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#6 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tdata[11]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#7 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tdata[12]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#8 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tdata[13]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#9 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tdata[14]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#10 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tdata[15]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#11 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tdata[1]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#12 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tdata[2]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#13 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tdata[3]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#14 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tdata[4]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#15 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tdata[5]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#16 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tdata[6]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#17 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tdata[7]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#18 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tdata[8]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#19 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tdata[9]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#20 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tlast' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#21 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 's_axis_tvalid' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#22 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_addr_h[0]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#23 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_addr_h[1]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#24 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_addr_h[2]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#25 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_addr_h[3]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#26 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_addr_h[4]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#27 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_addr_h[5]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#28 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_addr_h[6]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#29 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_addr_i[0]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#30 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_addr_i[1]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#31 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_addr_i[2]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#32 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_addr_i[3]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#33 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_addr_i[4]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#34 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_addr_i[5]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#35 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_addr_i[6]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#36 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_addr_i[7]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#37 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_data[0]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#38 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_data[10]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#39 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_data[11]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#40 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_data[12]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#41 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_data[13]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#42 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_data[14]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#43 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_data[15]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#44 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_data[1]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#45 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_data[2]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#46 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_data[3]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#47 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_data[4]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#48 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_data[5]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#49 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_data[6]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#50 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_data[7]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#51 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_data[8]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#52 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_data[9]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#53 Warning
+Same min and max delay values on IO port  
+The same input delay of 0.500 ns has been defined on port 'w_wr_en' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_input_delay -clock [get_clocks clk] 0.500 [all_inputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 2)
+Related violations: <none>
+
+XDCH-2#54 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'busy' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#55 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[0]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#56 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[10]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#57 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[11]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#58 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[12]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#59 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[13]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#60 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[14]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#61 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[15]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#62 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[16]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#63 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[17]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#64 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[18]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#65 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[19]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#66 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[1]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#67 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[20]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#68 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[21]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#69 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[22]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#70 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[23]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#71 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[24]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#72 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[25]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#73 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[26]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#74 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[27]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#75 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[28]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#76 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[29]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#77 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[2]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#78 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[30]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#79 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[31]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#80 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[32]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#81 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[33]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#82 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[34]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#83 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[35]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#84 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[36]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#85 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[37]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#86 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[38]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#87 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[39]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#88 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[3]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#89 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[4]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#90 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[5]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#91 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[6]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#92 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[7]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#93 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[8]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#94 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tdata[9]' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#95 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tlast' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#96 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 'm_axis_tvalid' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+XDCH-2#97 Warning
+Same min and max delay values on IO port  
+The same output delay of 0.500 ns has been defined on port 's_axis_tready' relative to clock clk for both max and min. Make sure this reflects the design intent.
+set_output_delay -clock [get_clocks clk] 0.500 [all_outputs]
+D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/constrs_1/imports/src/xdc_2.xdc (Line: 3)
+Related violations: <none>
+
+

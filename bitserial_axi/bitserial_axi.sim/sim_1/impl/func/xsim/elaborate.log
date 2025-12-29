@@ -1,0 +1,50 @@
+Vivado Simulator v2025.1.0
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+Copyright 2022-2025 Advanced Micro Devices, Inc. All Rights Reserved.
+Running: D:/APPS/Xilinx/2025.1/Vivado/bin/unwrapped/win64.o/xelab.exe --incr --debug typical --relax --mt 2 -L xil_defaultlib -L uvm -L unisims_ver -L secureip --snapshot bitserial_nn_tb_func_impl xil_defaultlib.bitserial_nn_tb xil_defaultlib.glbl -log elaborate.log 
+Using 2 slave threads.
+Starting static elaboration
+Pass Through NonSizing Optimizer
+WARNING: [VRFC 10-2861] module 'bitserial_nn' does not have a parameter named DATA_W [D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/sim_1/imports/src/bitserial_nn/tb_bitserial_nn.sv:58]
+WARNING: [VRFC 10-2861] module 'bitserial_nn' does not have a parameter named PRECISION [D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/sim_1/imports/src/bitserial_nn/tb_bitserial_nn.sv:59]
+WARNING: [VRFC 10-2861] module 'bitserial_nn' does not have a parameter named N_IN [D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/sim_1/imports/src/bitserial_nn/tb_bitserial_nn.sv:60]
+WARNING: [VRFC 10-2861] module 'bitserial_nn' does not have a parameter named N_HIDDEN [D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/sim_1/imports/src/bitserial_nn/tb_bitserial_nn.sv:61]
+WARNING: [VRFC 10-2861] module 'bitserial_nn' does not have a parameter named P [D:/Projects/iac_hackathon/bitserial_axi/bitserial_axi.srcs/sim_1/imports/src/bitserial_nn/tb_bitserial_nn.sv:62]
+Completed static elaboration
+Starting simulation data flow analysis
+Completed simulation data flow analysis
+Time Resolution for simulation is 1ps
+Compiling module unisims_ver.OBUF
+Compiling module unisims_ver.BUFGCE(CE_TYPE="ASYNC",SIM_DEVIC...
+Compiling module unisims_ver.IBUF
+Compiling module unisims_ver.x_lut1_mux2
+Compiling module unisims_ver.LUT1
+Compiling module unisims_ver.LUT4
+Compiling module unisims_ver.LUT5
+Compiling module unisims_ver.LUT6
+Compiling module unisims_ver.x_lut2_mux4
+Compiling module unisims_ver.LUT2
+Compiling module unisims_ver.FDRE_default
+Compiling module unisims_ver.MUXF8
+Compiling module unisims_ver.MUXF7
+Compiling module xil_defaultlib.input_buffer
+Compiling module unisims_ver.FDSE(IS_S_INVERTED=1'b1)
+Compiling module unisims_ver.x_lut3_mux8
+Compiling module unisims_ver.LUT3
+Compiling module unisims_ver.CARRY8
+Compiling module xil_defaultlib.mac_engine
+Compiling module xil_defaultlib.relu_activation
+Compiling module unisims_ver.RAMB36E2(CASCADE_ORDER_B="FIRST"...
+Compiling module unisims_ver.RAMB36E2(CASCADE_ORDER_B="MIDDLE...
+Compiling module unisims_ver.RAMB36E2(CASCADE_ORDER_B="MIDDLE...
+Compiling module unisims_ver.RAMB36E2(CASCADE_ORDER_B="LAST",...
+Compiling module unisims_ver.RAMB36E2(CASCADE_ORDER_B="FIRST"...
+Compiling module unisims_ver.RAMB36E2(CASCADE_ORDER_B="LAST",...
+Compiling module unisims_ver.RAMB36E2(CLOCK_DOMAINS="COMMON",...
+Compiling module unisims_ver.RAMB36E2(CASCADE_ORDER_B="LAST",...
+Compiling module unisims_ver.RAMB36E2(CASCADE_ORDER_B="FIRST"...
+Compiling module xil_defaultlib.wmem_hidden
+Compiling module xil_defaultlib.bitserial_nn
+Compiling module xil_defaultlib.bitserial_nn_tb
+Compiling module xil_defaultlib.glbl
+Built simulation snapshot bitserial_nn_tb_func_impl
