@@ -134,16 +134,14 @@ module tb_relu_activation;
 
         // --- TEST CASE 2: Random Values with Gaps ---
         $display("\n--- Test Case 2: Random Inputs with Random Gaps ---");
-        repeat(20) begin
-            // Randomize data
-            logic signed [ACC_W-1:0] rand_data = $urandom();
-            
-            // Drive data
-            drive_single_input(rand_data);
-            
-            // Insert random bubbles (invalid cycles) 0 to 3 cycles
-            repeat($urandom_range(0, 3)) @(posedge clk);
-        end
+         repeat(20) begin
+             logic signed [ACC_W-1:0] rand_data;
+             
+             rand_data = $urandom();
+             drive_single_input(rand_data);
+             
+             repeat($urandom_range(0, 3)) @(posedge clk);
+         end
         repeat(5) @(posedge clk); // Drain
 
 
