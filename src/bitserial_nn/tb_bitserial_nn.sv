@@ -6,8 +6,8 @@ module bitserial_nn_tb;
 
 localparam int DATA_W    = 16;
 localparam int PRECISION = DATA_W;
-localparam int N_IN      = 12;
-localparam int N_HIDDEN  = 6;
+localparam int N_IN      = 128;
+localparam int N_HIDDEN  = 64;
 localparam int N_LAYERS  = 3;
 localparam int P         = 4;
 
@@ -86,7 +86,7 @@ logic signed [DATA_W-1:0]
     golden_w [0:N_LAYERS-1][0:N_HIDDEN-1][0:N_IN-1];
 
 // activations[layer][input]  (layer 0 = N_IN wide)
-logic signed [DATA_W-1:0]
+logic signed [ACC_W-1:0]
     golden_act [0:N_LAYERS][0:N_IN-1];
 
 // final output
@@ -149,7 +149,7 @@ task automatic compute_golden(input int base);
 
                 // ReLU then truncate
                 golden_act[l+1][h] =
-                    (acc < 0) ? '0 : acc[DATA_W-1:0];
+                    (acc < 0) ? '0 : acc;
             end
         end
 

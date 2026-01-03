@@ -77,17 +77,60 @@ module bitserial_nn #(
 
     /* ---------------- LAYER INPUT MUX ---------------- */
 
-    logic signed [IN_VEC_W-1:0] layer_invec;
+    logic signed [N_IN*ACC_W-1:0] layer_invec;
 
-    genvar gi;
-    generate
-        for (gi = 0; gi < N_IN; gi++) begin : PACK_ACT
-            assign layer_invec[(gi+1)*DATA_W-1 -: DATA_W] =
-                (cur_layer == 0) ?
-                    invec_bus[(gi+1)*DATA_W-1 -: DATA_W] :
-                    (gi < N_HIDDEN ? act_mem[cur_layer-1][gi][DATA_W-1:0] : '0);
+
+    integer i;
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            layer_invec <= '0;
+        end else begin
+            for (i = 0; i < N_IN; i++) begin
+                if (cur_layer == 0)
+                    layer_invec[(i+1)*DATA_W-1 -: DATA_W]
+                        <= invec_bus[(i+1)*DATA_W-1 -: DATA_W];
+                else if (i < N_HIDDEN)
+                    layer_invec[(i+1)*DATA_W-1 -: DATA_W]
+                        <= act_mem[cur_layer-1][i];
+                else
+                    layer_invec[(i+1)*DATA_W-1 -: DATA_W]
+                        <= '0;
+            end
         end
-    endgenerate
+    end
+       logic signed [ACC_W-1:0] relu_out_data;
+    logic                    relu_out_valid;
+    logic                    relu_in_ready;
+integer l, h;
+logic [$clog2((N_HIDDEN>1)?N_HIDDEN:2)-1:0] act_idx;
+
+always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        // Reset activation memory
+        for (l = 0; l < N_LAYERS; l++)
+            for (h = 0; h < N_HIDDEN; h++)
+                act_mem[l][h] <= '0;
+
+        act_idx <= '0;
+    end
+    else begin
+        /* ---------------- STORE ACTIVATION ---------------- */
+        if (relu_out_valid && relu_in_ready && cur_layer < N_LAYERS-1) begin
+            act_mem[cur_layer][act_idx] <= relu_out_data;
+
+            if (act_idx < N_HIDDEN-1)
+                act_idx <= act_idx + 1'b1;
+        end
+
+        /* ---------------- RESET INDEX AT LAYER BOUNDARY ---------------- */
+        if (layer_done) begin
+            act_idx <= '0;
+        end
+    end
+end
+
+
+
 
 
     /* ---------------- WEIGHT MEMORY ---------------- */
@@ -117,11 +160,22 @@ module bitserial_nn #(
     logic signed [ACC_W-1:0] mac_out_data;
     logic                    mac_out_valid;
     logic                    mac_out_ready;
+    
   
     logic start_compute_req;
     logic mac_accept;
 
-    assign mac_accept = (start_compute_req && !busy);
+    logic layer_invec_valid;
+
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n)
+            layer_invec_valid <= 1'b0;
+        else
+            layer_invec_valid <= (cur_layer == 0) ? vector_done : layer_done;
+    end
+
+    assign mac_accept = start_compute_req && !busy && layer_invec_valid;
+
 
     always_ff @(posedge clk) begin
         if (!rst_n)
@@ -163,10 +217,6 @@ module bitserial_nn #(
 
     /* ---------------- ReLU ---------------- */
 
-    logic signed [ACC_W-1:0] relu_out_data;
-    logic                    relu_out_valid;
-    logic                    relu_in_ready;
-
     assign mac_out_ready = relu_in_ready;
 
     relu_activation #(
@@ -181,27 +231,6 @@ module bitserial_nn #(
         .out_valid (relu_out_valid),
         .in_ready  (relu_in_ready)
     );
-
-/* ---------------- STORE INTERMEDIATE ACTIVATIONS ---------------- */
-
-    logic [$clog2((N_HIDDEN>1)?N_HIDDEN:2)-1:0] act_idx;
-
-    always_ff @(posedge clk) begin
-        if (!rst_n) begin
-            act_idx <= '0;
-        end
-        else if (relu_out_valid && cur_layer < N_LAYERS-1) begin
-            act_mem[cur_layer][act_idx] <= relu_out_data;
-
-            // prevent overflow
-            if (act_idx < N_HIDDEN-1)
-                act_idx <= act_idx + 1'b1;
-        end
-
-        // reset index when a layer finishes
-        if (layer_done)
-            act_idx <= '0;
-    end
 
 
     /* ---------------- LAYER COUNTER ---------------- */

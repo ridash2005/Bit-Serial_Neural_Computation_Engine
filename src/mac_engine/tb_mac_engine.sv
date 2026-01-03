@@ -6,7 +6,7 @@ module tb_mac_engine;
 
     parameter int DATA_W     = 16;
     parameter int PRECISION  = DATA_W;
-    parameter int N_IN       = 4;
+    parameter int N_IN       = 10;
     parameter int N_HIDDEN   = 8;
     parameter int N_LAYERS   = 3;
     parameter int P          = 3;
