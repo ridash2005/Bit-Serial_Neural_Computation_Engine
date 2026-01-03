@@ -85,9 +85,10 @@ module bitserial_nn #(
             assign layer_invec[(gi+1)*DATA_W-1 -: DATA_W] =
                 (cur_layer == 0) ?
                     invec_bus[(gi+1)*DATA_W-1 -: DATA_W] :
-                    act_mem[cur_layer-1][gi][DATA_W-1:0];
+                    (gi < N_HIDDEN ? act_mem[cur_layer-1][gi][DATA_W-1:0] : '0);
         end
     endgenerate
+
 
     /* ---------------- WEIGHT MEMORY ---------------- */
 
@@ -116,6 +117,27 @@ module bitserial_nn #(
     logic signed [ACC_W-1:0] mac_out_data;
     logic                    mac_out_valid;
     logic                    mac_out_ready;
+  
+    logic start_compute_req;
+    logic mac_accept;
+
+    assign mac_accept = (start_compute_req && !busy);
+
+    always_ff @(posedge clk) begin
+        if (!rst_n)
+            start_compute_req <= 1'b0;
+
+        // Raise request
+        else if ((cur_layer == 0 && vector_done) ||
+                (cur_layer != 0 && layer_done))
+            start_compute_req <= 1'b1;
+
+        // Clear ONLY when MAC accepts it
+        else if (mac_accept)
+            start_compute_req <= 1'b0;
+    end
+
+
 
     mac_engine #(
         .DATA_W    (DATA_W),
@@ -128,7 +150,7 @@ module bitserial_nn #(
         .clk           (clk),
         .rst_n         (rst_n),
         .layer_idx     (cur_layer),
-        .start_compute ((cur_layer == 0) ? vector_done : layer_done),
+        .start_compute (start_compute_req),
         .invec_bus     (layer_invec),
         .wmem_raddr    (wmem_raddr),
         .wmem_rdata    (wmem_rdata),
@@ -160,7 +182,7 @@ module bitserial_nn #(
         .in_ready  (relu_in_ready)
     );
 
-    /* ---------------- STORE INTERMEDIATE ACTIVATIONS ---------------- */
+/* ---------------- STORE INTERMEDIATE ACTIVATIONS ---------------- */
 
     logic [$clog2((N_HIDDEN>1)?N_HIDDEN:2)-1:0] act_idx;
 
@@ -168,16 +190,19 @@ module bitserial_nn #(
         if (!rst_n) begin
             act_idx <= '0;
         end
-        else if (relu_out_valid) begin
-            if (cur_layer < N_LAYERS-1) begin
-                act_mem[cur_layer][act_idx] <= relu_out_data;
+        else if (relu_out_valid && cur_layer < N_LAYERS-1) begin
+            act_mem[cur_layer][act_idx] <= relu_out_data;
+
+            // prevent overflow
+            if (act_idx < N_HIDDEN-1)
                 act_idx <= act_idx + 1'b1;
-            end
         end
 
+        // reset index when a layer finishes
         if (layer_done)
             act_idx <= '0;
     end
+
 
     /* ---------------- LAYER COUNTER ---------------- */
 

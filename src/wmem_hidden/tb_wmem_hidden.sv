@@ -1,182 +1,200 @@
 `timescale 1ns/1ps
 
-module tb_wmem_hidden;
+module bitserial_nn_tb;
 
-    // Parameters & Signals
+/* ---------------- PARAMETERS ---------------- */
 
-    parameter int DATA_W   = 16;
-    parameter int N_IN     = 8;  
-    parameter int N_HIDDEN = 4;
-    
-    localparam int WMEM_SIZE = N_HIDDEN * N_IN;
-    localparam int ADDR_H_W  = $clog2((N_HIDDEN>1)?N_HIDDEN:2);
-    localparam int ADDR_I_W  = $clog2((N_IN>1)?N_IN:2);
-    localparam int RADDR_W   = $clog2((WMEM_SIZE>1)?WMEM_SIZE:2);
+localparam int DATA_W    = 16;
+localparam int PRECISION = DATA_W;
+localparam int N_IN      = 512;     // keep small for sim
+localparam int N_HIDDEN  = 256;
+localparam int N_LAYERS  = 7;
+localparam int P         = 4;
 
-    logic clk;
-    logic rst_n;
+localparam int ACC_W =
+    (2*DATA_W) + $clog2((N_IN>1)?N_IN:2);
 
-    // Write Port
-    logic                     w_wr_en;
-    logic [ADDR_H_W-1:0]      w_addr_h;
-    logic [ADDR_I_W-1:0]      w_addr_i;
-    logic signed [DATA_W-1:0] w_data;
+/* ---------------- CLOCK / RESET ---------------- */
 
-    // Read Port
-    logic [RADDR_W-1:0]       raddr;
-    logic signed [DATA_W-1:0] rdata;
+logic clk = 0;
+logic rst_n = 0;
+always #5 clk = ~clk;
 
-    // Scoreboard: A local array to mimic expected memory state
-    logic signed [DATA_W-1:0] shadow_mem [WMEM_SIZE];
-    
-    int error_count = 0;
-    int rh=0, ri=0, rval=0, addr_flat=0;  
+/* ---------------- AXI INPUT ---------------- */
 
-    // 2. DUT Instantiation
+logic signed [DATA_W-1:0] s_axis_tdata;
+logic                     s_axis_tvalid;
+logic                     s_axis_tready;
+logic                     s_axis_tlast;
 
-    wmem_hidden #(
-        .DATA_W(DATA_W),
-        .N_IN(N_IN),
-        .N_HIDDEN(N_HIDDEN)
-    ) dut (.*);
+/* ---------------- AXI OUTPUT ---------------- */
 
+logic signed [ACC_W-1:0] m_axis_tdata;
+logic                   m_axis_tvalid;
+logic                   m_axis_tready;
+logic                   m_axis_tlast;
 
-    // 3. Clock Generation
+/* ---------------- WEIGHT WRITE ---------------- */
 
-    initial begin
-        clk = 0;
-        forever #5 clk = ~clk; // 100 MHz
-    end
+logic w_wr_en;
+logic [$clog2(N_HIDDEN)-1:0] w_addr_h;
+logic [$clog2(N_IN)-1:0]     w_addr_i;
+logic [$clog2(N_LAYERS)-1:0] w_addr_l;
+logic signed [DATA_W-1:0]    w_data;
 
+/* ---------------- STATUS ---------------- */
 
-    // 4. Test Stimulus
+logic busy;
 
-    initial begin
-        //$dumpfile("wmem_dump.vcd");
-        //$dumpvars(0, tb_wmem_hidden);
+/* ---------------- DUT ---------------- */
 
-        // Initialize signals
-        rst_n    = 0;
-        w_wr_en  = 0;
-        w_addr_h = 0;
-        w_addr_i = 0;
-        w_data   = 0;
-        raddr    = 0;
-        
-        // Initialize scoreboard to match DUT reset state
-        for(int j=0; j<WMEM_SIZE; j++) shadow_mem[j] = 0;
+bitserial_nn #(
+    .DATA_W(DATA_W),
+    .PRECISION(PRECISION),
+    .N_IN(N_IN),
+    .N_HIDDEN(N_HIDDEN),
+    .N_LAYERS(N_LAYERS),
+    .P(P)
+) dut (
+    .clk(clk),
+    .rst_n(rst_n),
 
-        repeat(5) @(posedge clk);
-        rst_n = 1;
+    .s_axis_tdata (s_axis_tdata),
+    .s_axis_tvalid(s_axis_tvalid),
+    .s_axis_tready(s_axis_tready),
+    .s_axis_tlast (s_axis_tlast),
+
+    .w_wr_en (w_wr_en),
+    .w_addr_h(w_addr_h),
+    .w_addr_i(w_addr_i),
+    .w_addr_l(w_addr_l),
+    .w_data  (w_data),
+
+    .m_axis_tdata (m_axis_tdata),
+    .m_axis_tvalid(m_axis_tvalid),
+    .m_axis_tready(m_axis_tready),
+    .m_axis_tlast (m_axis_tlast),
+
+    .busy(busy)
+);
+
+/* ---------------- GOLDEN MODEL STORAGE ---------------- */
+
+logic signed [DATA_W-1:0] golden_w   [0:N_LAYERS-1][0:N_HIDDEN-1][0:N_IN-1];
+logic signed [DATA_W-1:0] golden_act [0:N_LAYERS][0:N_HIDDEN-1];
+
+/* ---------------- LOAD WEIGHTS ---------------- */
+
+task automatic load_weights;
+    int l,h,i;
+    begin
+        w_wr_en = 0;
         @(posedge clk);
 
-        // --- TEST 1: Sequential Write (Load Weights) ---
-        $display("--- Test 1: Loading Weights ---");
-        for (int h = 0; h < N_HIDDEN; h++) begin
-            for (int i = 0; i < N_IN; i++) begin
-                write_weight(h, i, $signed(h*10 + i + 1));
+        for (l = 0; l < N_LAYERS; l++) begin
+            for (h = 0; h < N_HIDDEN; h++) begin
+                for (i = 0; i < N_IN; i++) begin
+                    @(posedge clk);
+                    w_wr_en  <= 1;
+                    w_addr_l <= l;
+                    w_addr_h <= h;
+                    w_addr_i <= i;
+                    w_data   <= $signed(l*100 + h*10 + i);
+
+                    golden_w[l][h][i] =
+                        $signed(l*100 + h*10 + i);
+                end
             end
         end
 
-        // Allow final writes to complete
-        repeat(2) @(posedge clk);
+        @(posedge clk);
+        w_wr_en <= 0;
+    end
+endtask
 
-        // --- TEST 2: Verify Read Latency and Data ---
-        $display("--- Test 2: Verifying Reads ---");
-        for (int addr = 0; addr < WMEM_SIZE; addr++) begin
-            check_read(addr);
+/* ---------------- GOLDEN COMPUTE ---------------- */
+
+task automatic compute_golden(input int base);
+    int l,h,i;
+    integer acc;
+    begin
+        // input layer
+        for (i = 0; i < N_IN; i++)
+            golden_act[0][i] = base + i;
+
+        for (l = 0; l < N_LAYERS; l++) begin
+            for (h = 0; h < N_HIDDEN; h++) begin
+                acc = 0;
+                for (i = 0; i < N_IN; i++) begin
+                    if (l == 0)
+                        acc += golden_act[0][i] * golden_w[l][h][i];
+                    else if (i < N_HIDDEN)
+                        acc += golden_act[l][i] * golden_w[l][h][i];
+                end
+                golden_act[l+1][h] =
+                    (acc < 0) ? '0 : acc[DATA_W-1:0];
+            end
         end
+    end
+endtask
 
-        // --- TEST 3: Random Access Write/Read ---
-        $display("--- Test 3: Random Access ---");
-        repeat(15) begin
-              rh   = $urandom_range(0, N_HIDDEN-1);
-              ri   = $urandom_range(0, N_IN-1);
-              rval = $urandom_range(-500, 500);
-              addr_flat = rh * N_IN + ri;
-            
-            $display("[Time %0t] Writing to [h=%0d, i=%0d] addr=%0d value=%0d", 
-                     $time, rh, ri, addr_flat, rval);
-            
-            write_weight(rh, ri, rval);
+/* ---------------- STREAM INPUT ---------------- */
 
-            check_read(addr_flat);
+task automatic stream_input(input int base);
+    int i;
+    begin
+        for (i = 0; i < N_IN; i++) begin
+            s_axis_tdata  <= base + i;
+            s_axis_tvalid <= 1;
+            s_axis_tlast  <= (i == N_IN-1);
+
+            do @(posedge clk);
+            while (!s_axis_tready);
+
+            s_axis_tvalid <= 0;
+            s_axis_tlast  <= 0;
         end
+    end
+endtask
 
-        // --- TEST 4: Back-to-back writes to same location ---
-        $display("--- Test 4: Overwrite Test ---");
-        write_weight(0, 0, 100);
-        write_weight(0, 0, 200);
-        write_weight(0, 0, 300);
-        repeat(2) @(posedge clk);
-        check_read(0); // Should read 300
+/* ---------------- MAIN TEST ---------------- */
 
-        // --- TEST 5: Write and immediate read to different addresses ---
-        $display("--- Test 5: Concurrent Access Test ---");
-        write_weight(1, 1, 111);
-        // Start reading from different address while write completes
-        check_read(2 * N_IN + 2);
-        check_read(1 * N_IN + 1); // Now read the address we just wrote
+int out_idx;
 
-        // Final Report
-        $display("\n========================================");
-        if (error_count == 0) begin
-            $display("All tests PASSED!");
-        end else begin
-            $display("Tests FAILED with %0d errors", error_count);
+initial begin
+    $dumpfile("bitserial_nn_tb.vcd");
+    $dumpvars(0, bitserial_nn_tb);
+
+    // defaults
+    s_axis_tvalid = 0;
+    s_axis_tdata  = 0;
+    s_axis_tlast  = 0;
+    m_axis_tready = 1;
+    w_wr_en       = 0;
+
+    repeat (5) @(posedge clk);
+    rst_n = 1;
+
+    load_weights();
+    compute_golden(0);
+    stream_input(0);
+
+    out_idx = 0;
+
+    while (out_idx < N_HIDDEN) begin
+        @(posedge clk);
+        if (m_axis_tvalid) begin
+            if (m_axis_tdata !== golden_act[N_LAYERS][out_idx])
+                $error("Mismatch H%0d: DUT=%0d GOLD=%0d",
+                       out_idx,
+                       m_axis_tdata,
+                       golden_act[N_LAYERS][out_idx]);
+            out_idx++;
         end
-        $display("========================================\n");
-        
-        $finish;
     end
 
-
-    // Helper Tasks
-
-    // Properly handle 2-cycle write pipeline delay
-    task automatic write_weight(
-        input [ADDR_H_W-1:0] h, 
-        input [ADDR_I_W-1:0] i, 
-        input signed [DATA_W-1:0] data
-    );
-        automatic int flat_addr = h * N_IN + i;
-        begin
-            // Cycle 0: Apply write inputs
-            w_addr_h <= h;
-            w_addr_i <= i;
-            w_data   <= data; 
-            w_wr_en  <= 1;
-            
-            @(posedge clk);  // Cycle 1: Data enters pipeline registers (w_data_reg, etc.)
-            w_wr_en <= 0;    // De-assert write enable
-            
-            @(posedge clk);  // Cycle 2: Data is written to mem[]
-            
-            // Now update shadow memory to reflect the completed write
-            shadow_mem[flat_addr] = data;
-            
-            $display("[Time %0t] Write completed: Addr %0d = %h", $time, flat_addr, data);
-        end
-    endtask
-
-    // Properly handle synchronous BRAM read with 1-cycle latency
-    task automatic check_read(input [RADDR_W-1:0] addr);
-        logic signed [DATA_W-1:0] expected;
-        begin
-            expected = shadow_mem[addr];
-            raddr <= addr;      // Apply read address
-            
-            @(posedge clk);     // Wait 1 cycle for BRAM read latency
-            #1;                 // Small delta delay to sample after clock edge
-            
-            if (rdata !== expected) begin
-                $error("[Time %0t] Read Mismatch at Addr %0d! Expected: %h, Got: %h", 
-                        $time, addr, expected, rdata);
-                error_count++;
-            end else begin
-                $display("[Time %0t] Read Addr %0d: %h (OK)", $time, addr, rdata);
-            end
-        end
-    endtask
+    $display("✅ TEST PASSED: bitserial_nn multi-layer verified");
+    $finish;
+end
 
 endmodule

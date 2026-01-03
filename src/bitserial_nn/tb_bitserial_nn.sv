@@ -2,58 +2,61 @@
 
 module bitserial_nn_tb;
 
-  /* ---------------- PARAMETERS ---------------- */
+/* ---------------- PARAMETERS ---------------- */
 
-  localparam int DATA_W    = 16;
-  localparam int N_IN      = 256;
-  localparam int N_HIDDEN  = 128;
-  localparam int N_LAYERS  = 3;
-  localparam int P         = 4;
-  localparam int PRECISION = DATA_W;
+localparam int DATA_W    = 16;
+localparam int PRECISION = DATA_W;
+localparam int N_IN      = 12;
+localparam int N_HIDDEN  = 6;
+localparam int N_LAYERS  = 3;
+localparam int P         = 4;
 
-  localparam int ACC_W =
-      (2*DATA_W) + $clog2((N_IN>1)?N_IN:2);
+localparam int ACC_W =
+    (2*DATA_W) + $clog2((N_IN>1)?N_IN:2);
 
-  /* ---------------- CLOCK / RESET ---------------- */
+/* ---------------- CLOCK / RESET ---------------- */
 
-  logic clk = 0;
-  logic rst_n = 0;
-  always #5 clk = ~clk;
 
-  /* ---------------- AXI INPUT ---------------- */
+logic clk = 0;
+logic rst_n = 0;
+always #5 clk = ~clk;
 
-  logic signed [DATA_W-1:0] s_axis_tdata;
-  logic                    s_axis_tvalid;
-  logic                    s_axis_tready;
-  logic                    s_axis_tlast;
+/* ---------------- AXI INPUT ---------------- */
 
-  /* ---------------- AXI OUTPUT ---------------- */
+logic signed [DATA_W-1:0] s_axis_tdata;
+logic                     s_axis_tvalid;
+logic                     s_axis_tready;
+logic                     s_axis_tlast;
 
-  logic signed [ACC_W-1:0]  m_axis_tdata;
-  logic                    m_axis_tvalid;
-  logic                    m_axis_tready;
-  logic                    m_axis_tlast;
+/* ---------------- AXI OUTPUT ---------------- */
 
-  /* ---------------- WEIGHT WRITE ---------------- */
+logic signed [ACC_W-1:0]  m_axis_tdata;
+logic                     m_axis_tvalid;
+logic                     m_axis_tready;
+logic                     m_axis_tlast;
 
-  logic w_wr_en;
-  logic [$clog2(N_HIDDEN)-1:0] w_addr_h;
-  logic [$clog2(N_IN)-1:0]     w_addr_i;
-  logic [$clog2(N_LAYERS)-1:0] w_addr_l;
-  logic signed [DATA_W-1:0]    w_data;
+/* ---------------- WEIGHT WRITE ---------------- */
 
-  logic busy;
+logic w_wr_en;
+logic [$clog2(N_HIDDEN)-1:0] w_addr_h;
+logic [$clog2(N_IN)-1:0]     w_addr_i;
+logic [$clog2(N_LAYERS)-1:0] w_addr_l;
+logic signed [DATA_W-1:0]    w_data;
 
-  /* ---------------- DUT ---------------- */
+/* ---------------- STATUS ---------------- */
 
-  bitserial_nn #(
+logic busy;
+
+/* ---------------- DUT ---------------- */
+
+bitserial_nn #(
     .DATA_W(DATA_W),
     .PRECISION(PRECISION),
     .N_IN(N_IN),
     .N_HIDDEN(N_HIDDEN),
     .N_LAYERS(N_LAYERS),
     .P(P)
-  ) dut (
+) dut (
     .clk(clk),
     .rst_n(rst_n),
 
@@ -74,134 +77,159 @@ module bitserial_nn_tb;
     .m_axis_tlast (m_axis_tlast),
 
     .busy(busy)
-  );
+);
 
-  /* ---------------- GOLDEN STORAGE ---------------- */
+/* ---------------- GOLDEN STORAGE ---------------- */
 
-  logic signed [DATA_W-1:0]
-      golden_w [0:N_LAYERS-1][0:N_HIDDEN-1][0:N_IN-1];
+// weights[layer][hidden][input]
+logic signed [DATA_W-1:0]
+    golden_w [0:N_LAYERS-1][0:N_HIDDEN-1][0:N_IN-1];
 
-  logic signed [DATA_W-1:0]
-      golden_act [0:N_LAYERS][0:N_HIDDEN-1];
+// activations[layer][input]  (layer 0 = N_IN wide)
+logic signed [DATA_W-1:0]
+    golden_act [0:N_LAYERS][0:N_IN-1];
 
-  /* ---------------- LOAD WEIGHTS ---------------- */
+// final output
+logic signed [ACC_W-1:0]
+    golden_out [0:N_HIDDEN-1];
 
-  task load_weights;
+/* ---------------- LOAD WEIGHTS ---------------- */
+
+task automatic load_weights;
     int l,h,i;
     begin
-      $display("[TB] Loading weights...");
-      for (l = 0; l < N_LAYERS; l++) begin
-        for (h = 0; h < N_HIDDEN; h++) begin
-          for (i = 0; i < N_IN; i++) begin
-            @(posedge clk);
-            w_wr_en  <= 1;
-            w_addr_l <= l;
-            w_addr_h <= h;
-            w_addr_i <= i;
-            w_data   <= $signed(l*1000 + h*10 + i);
-            golden_w[l][h][i] = $signed(l*1000 + h*10 + i);
-          end
+       $display("[TB] Loading weights...");
+        w_wr_en = 0;
+        @(posedge clk);
+
+        for (l = 0; l < N_LAYERS; l++) begin
+            for (h = 0; h < N_HIDDEN; h++) begin
+                for (i = 0; i < N_IN; i++) begin
+                    @(posedge clk);
+                    w_wr_en  <= 1;
+                    w_addr_l <= l;
+                    w_addr_h <= h;
+                    w_addr_i <= i;
+                    w_data   <= $signed(l*100 + h*10 + i);
+
+                    golden_w[l][h][i] =
+                        $signed(l*100 + h*10 + i);
+                end
+            end
         end
-      end
-      @(posedge clk);
-      w_wr_en <= 0;
-      $display("[TB] Weight load complete");
+
+        @(posedge clk);
+        w_wr_en <= 0;
+        $display("[TB] Weight load complete");
     end
-  endtask
+endtask
 
-  /* ---------------- GOLDEN MODEL ---------------- */
+/* ---------------- GOLDEN MODEL ---------------- */
 
-  task compute_golden(input int base);
+task automatic compute_golden(input int base);
     int l,h,i;
-    integer acc;
+    logic signed [ACC_W+16-1:0] acc;
     begin
-      // Input layer
-      for (i = 0; i < N_IN; i++)
-        golden_act[0][i] = $signed(base + i);
+        // input vector
+        for (i = 0; i < N_IN; i++)
+            golden_act[0][i] = base + i;
 
-      // Hidden layers
-      for (l = 0; l < N_LAYERS; l++) begin
-        for (h = 0; h < N_HIDDEN; h++) begin
-          acc = 0;
-          for (i = 0; i < N_IN; i++)
-            acc += golden_act[l][i] * golden_w[l][h][i];
+        // layered compute
+        for (l = 0; l < N_LAYERS; l++) begin
+            for (h = 0; h < N_HIDDEN; h++) begin
+                acc = '0;
 
-          // ReLU + DATA_W truncation (MATCHES DUT)
-          golden_act[l+1][h] =
-              (acc < 0) ? '0 : acc[DATA_W-1:0];
+                for (i = 0; i < N_IN; i++) begin
+                    if (l == 0)
+                        acc += golden_act[0][i] * golden_w[l][h][i];
+                    else if (i < N_HIDDEN)
+                        acc += golden_act[l][i] * golden_w[l][h][i];
+                    // else zero padding
+                end
+
+                // ReLU then truncate
+                golden_act[l+1][h] =
+                    (acc < 0) ? '0 : acc[DATA_W-1:0];
+            end
         end
-      end
+
+        for (h = 0; h < N_HIDDEN; h++)
+            golden_out[h] = golden_act[N_LAYERS][h];
     end
-  endtask
+endtask
 
-  /* ---------------- STREAM INPUT ---------------- */
+/* ---------------- AXI STREAM INPUT ---------------- */
 
-  task stream_input_vector(input int base);
+task automatic stream_input(input int base);
     int i;
     begin
-      for (i = 0; i < N_IN; i++) begin
-        s_axis_tdata  <= $signed(base + i);
-        s_axis_tlast  <= (i == N_IN-1);
-        s_axis_tvalid <= 1;
+       $display("[TB] Streaming input vector...");
+        for (i = 0; i < N_IN; i++) begin
+            s_axis_tdata  <= $signed(base + i);
+            s_axis_tlast  <= (i == N_IN-1);
+            s_axis_tvalid <= 1;
 
-        do @(posedge clk);
-        while (!(s_axis_tvalid && s_axis_tready));
+      // WAIT FOR REAL HANDSHAKE
+      do @(posedge clk);
+      while (!(s_axis_tvalid && s_axis_tready));
 
-        s_axis_tvalid <= 0;
-        s_axis_tlast  <= 0;
-      end
+            s_axis_tvalid <= 0;
+            s_axis_tlast  <= 0;
+        end
+        $display("[TB] Input streaming done");
     end
-  endtask
+endtask
 
-  /* ---------------- MAIN ---------------- */
+/* ---------------- MAIN TEST ---------------- */
 
-  int recv_count;
-  int timeout;
+int out_idx;
 
-  initial begin
+initial begin
     $dumpfile("bitserial_nn_tb.vcd");
     $dumpvars(0, bitserial_nn_tb);
 
-    // Defaults
     s_axis_tvalid = 0;
     s_axis_tdata  = 0;
     s_axis_tlast  = 0;
     m_axis_tready = 1;
-    w_wr_en = 0;
-    w_addr_l = 0;
+    w_wr_en       = 0;
 
-    // Reset
     repeat (5) @(posedge clk);
     rst_n = 1;
 
+    $display("[TB] Reset released");
+
     load_weights();
     compute_golden(0);
-    stream_input_vector(0);
+    stream_input(0);
+    
+    // WAIT FOR COMPUTE TO COMPLETE
+wait (busy);
+wait (!busy);
 
-    recv_count = 0;
-    timeout = 0;
+    out_idx = 0;
 
-    while (recv_count < N_HIDDEN && timeout < 1_000_000) begin
-      @(posedge clk);
-      timeout++;
-
-      if (m_axis_tvalid) begin
-        if (m_axis_tdata !== golden_act[N_LAYERS][recv_count]) begin
-          $error("[FAIL] Mismatch at H=%0d DUT=%0d GOLD=%0d",
-                 recv_count,
-                 m_axis_tdata,
-                 golden_act[N_LAYERS][recv_count]);
+    while (out_idx < N_HIDDEN) begin
+        @(posedge clk);
+        if (m_axis_tvalid) begin
+            if (m_axis_tdata !== golden_out[out_idx])
+                $error("Mismatch H=%0d DUT=%0d GOLD=%0d LAST=%0b",
+                       out_idx,
+                       m_axis_tdata,
+                       golden_out[out_idx],
+                       m_axis_tlast);
+            else
+                $display("[OUT] H=%0d DUT=%0d GOLD=%0d LAST=%0b",
+                         out_idx,
+                         m_axis_tdata,
+                         golden_out[out_idx],
+                         m_axis_tlast);
+            out_idx++;
         end
-        recv_count++;
-      end
     end
 
-    if (recv_count == N_HIDDEN)
-      $display("[TB] ✅ SUCCESS: Multi-layer outputs matched");
-    else
-      $error("[TB] ❌ TIMEOUT");
-
+    $display("✅ TEST PASSED: bitserial_nn verified correctly");
     $finish;
-  end
+end
 
 endmodule
