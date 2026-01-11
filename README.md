@@ -17,9 +17,12 @@ This project was presented and declared a **winning presentation** in the VLSI H
 ## 🚀 Key Features
 *   **Bit-Serial Multipliers**: Dramatically reduces hardware area (Multipliers/DSP slices).
 *   **AXI-Stream Compliant**: Seamlessly integrates into standard SoC and FPGA workflows.
+*   **Hardware-Grade Core**: Standardized asynchronous resets and optimized timing for high-frequency deployment.
 *   **Parameterized Architecture**: Easily configure input size (`N_IN`), hidden layers (`N_HIDDEN`), and arithmetic precision (`DATA_W`).
+*   **IP Packaging Ready**: Includes Xilinx-standard interface metadata for direct Vivado Integration.
 *   **On-Chip Activation**: Integrated ReLU activation layer for end-to-end inference support.
 *   **Scalable Memory**: BRAM-optimized weight and activation storage.
+
 
 ---
 

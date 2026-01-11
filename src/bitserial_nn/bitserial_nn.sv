@@ -1,308 +1,302 @@
 `timescale 1ns/1ps
 
+/**
+ * Module: bitserial_nn
+ * Description: Top-Level Bit-Serial Neural Computation Engine.
+ *              Integrates input buffering, weight memory, MAC engine, 
+ *              and ReLU activation. Supports multi-layer inference 
+ *              via internal activation recycling.
+ */
+
+/* Xilinx IP Decorators for automated packaging */
+(* X_INTERFACE_INFO = "xilinx.com:signal:clock:1.0 clk CLK" *)
+(* X_INTERFACE_PARAMETER = "ASSOCIATED_BUSIF s_axis:m_axis, ASSOCIATED_RESET rst_n" *)
 module bitserial_nn #(
-    parameter int DATA_W    = 16,
-    parameter int PRECISION = DATA_W,
-    parameter int N_IN      = 128,
-    parameter int N_HIDDEN  = 64,
-    parameter int N_LAYERS = 3,
-    parameter int P         = 4
+    parameter int DATA_W    = 16,  // bit-width of input features and weights
+    parameter int PRECISION = 16,  // bit-serial processing cycles
+    parameter int N_IN      = 4,   // input vector size
+    parameter int N_HIDDEN  = 8,   // hidden layer size
+    parameter int N_LAYERS  = 2,   // total number of layers to compute
+    parameter int P         = 1    // internal parallelism (processing lanes)
 )(
-    input  logic clk,
-    input  logic rst_n,
+    input  logic clk,   // master clock
+    
+    (* X_INTERFACE_INFO = "xilinx.com:signal:reset:1.0 rst_n RST" *)
+    (* X_INTERFACE_PARAMETER = "POLARITY ACTIVE_LOW" *)
+    input  logic rst_n, // asynchronous active-low reset
 
-     
-    // AXI-Stream INPUT (features)
-     
-    input  logic signed [DATA_W-1:0] s_axis_tdata,
-    input  logic                     s_axis_tvalid,
-    output logic                     s_axis_tready,
-    input  logic                     s_axis_tlast,
+    /**
+     * Weight Loader Interface:
+     * Used to populate internal BRAM with weights before starting inference.
+     */
+    input  logic                                        w_wr_en,
+    input  logic [$clog2((N_LAYERS > 1) ? N_LAYERS : 2)-1:0]  w_addr_l,
+    input  logic [$clog2((N_HIDDEN > 1) ? N_HIDDEN : 2)-1:0]  w_addr_h,
+    input  logic [$clog2((N_IN > 1) ? N_IN : 2)-1:0]          w_addr_i,
+    input  logic signed [DATA_W-1:0]                   w_data,
 
-     
-    // Weight memory write
-     
-    input  logic w_wr_en,
-    input  logic [$clog2((N_HIDDEN>1)?N_HIDDEN:2)-1:0] w_addr_h,
-    input  logic [$clog2((N_IN>1)?N_IN:2)-1:0]         w_addr_i,
-    input  logic [$clog2((N_LAYERS>1)?N_LAYERS:2)-1:0] w_addr_l,
-    input  logic signed [DATA_W-1:0]                  w_data,
+    /**
+     * Slave AXI-Stream (Input Vector):
+     * Receives the external input features for Layer 0.
+     */
+    input  logic [DATA_W-1:0] s_axis_tdata,
+    input  logic              s_axis_tvalid,
+    output logic              s_axis_tready,
+    input  logic              s_axis_tlast, // marks end of input vector
 
-     
-    // AXI-Stream OUTPUT (hidden activations)
-     
-    output logic signed [(2*DATA_W)+$clog2((N_IN>1)?N_IN:2)-1:0] m_axis_tdata,
-    output logic                                               m_axis_tvalid,
-    input  logic                                               m_axis_tready,
-    output logic                                               m_axis_tlast,
-
-    // Global busy
-    output logic                                               busy
+    /**
+     * Master AXI-Stream (Output Activations):
+     * Streams out the final layer's computed activations.
+     */
+    output logic [DATA_W-1:0] m_axis_tdata,
+    output logic              m_axis_tvalid,
+    input  logic              m_axis_tready,
+    output logic              m_axis_tlast  // marks end of output vector
 );
 
-     
-    // Local parameters
-     
+    // Dynamic width calculation for internal accumulators
     localparam int ACC_W = (2*DATA_W) + $clog2((N_IN>1)?N_IN:2);
-    localparam int IN_VEC_W = N_IN * DATA_W;
-    localparam int WMEM_ADDR_W = $clog2(((N_HIDDEN*N_IN)>1)?(N_HIDDEN*N_IN):2);
+    localparam int WMEM_SIZE = N_LAYERS * N_HIDDEN * N_IN;
+    localparam int WMEM_ADDR_W = $clog2((WMEM_SIZE>1)?WMEM_SIZE:2);
 
-     
-    // Internal signals
-     
-    logic signed [IN_VEC_W-1:0] invec_bus;
-    logic                      vector_done;
+    // --- 1. SIGNAL DECLARATIONS ---
 
-    logic [WMEM_ADDR_W-1:0]    wmem_raddr;
-    logic signed [DATA_W-1:0]  wmem_rdata;
+    // Controller State
+    logic [$clog2(N_LAYERS)-1:0] cur_layer; // current processing depth
+    logic busy;                             // status indicator
 
-    logic [$clog2(N_LAYERS)-1:0] cur_layer;
-    logic                        layer_done;
+    // Input Buffer Signals
+    logic [N_IN*DATA_W-1:0] in_bus;    // parallelized input vector
+    logic                   vector_done; // complete vector received pulse
 
-    logic signed [ACC_W-1:0]   mac_out_data;
-    logic                      mac_out_valid;
-    logic                      mac_out_ready;
+    // Weight Memory Signals
+    logic [WMEM_ADDR_W-1:0]     w_raddr;
+    logic signed [DATA_W-1:0]  w_rdata;
 
-    logic signed [ACC_W-1:0]   relu_out_data;
-    logic                      relu_out_valid;
-    logic                      relu_out_ready;
-    logic                      relu_in_ready;
+    // MAC Engine Signals
+    logic                      start_compute_req; // trigger MAC math
+    logic                      mac_accept;        // MAC acknowledged start
+    logic                      mac_busy;
+    logic                      layer_done;        // entire layer completed pulse
+    
+    // Activation Memory (Internal BRAM for intermediate layers)
+    logic signed [DATA_W-1:0]  act_mem [0:N_HIDDEN-1];
+    logic [$clog2(N_HIDDEN)-1:0] act_idx; // write pointer
 
-    integer i, l, h;
+    // ReLU Pipeline Signals
+    logic [ACC_W-1:0]          relu_in;
+    logic                      relu_in_v;
+    logic                      relu_in_r;
+    logic [ACC_W-1:0]          relu_out;
+    logic                      relu_out_v;
+    logic                      relu_out_r;
 
-     
-    // AXI INPUT HANDSHAKE
-     
-    assign s_axis_tready = ~busy;
+    // Streaming State
+    logic [$clog2(N_HIDDEN)-1:0] out_idx; // master stream counter
 
-     
-    // Input buffer
-     
+
+    // --- 2. INPUT VECTOR PARALLELIZER ---
+    /**
+     * Buffer external serial data until a full 'N_IN' vector is ready.
+     * Stalls if MAC is still busy with a previous request.
+     */
     input_buffer #(
-        .DATA_W (DATA_W),
-        .N_IN   (N_IN)
-    ) u_input_buffer (
-        .clk           (clk),
-        .rst_n         (rst_n),
-        .data_in       (s_axis_tdata),
-        .data_in_valid (s_axis_tvalid & s_axis_tready),
-        .vector_last   (s_axis_tlast),
-        .busy          (busy),                         
-        .invec_bus     (invec_bus),
-        .vector_done   (vector_done)
+        .DATA_W(DATA_W),
+        .N_IN(N_IN)
+    ) inbuf_inst (
+        .clk        (clk),
+        .rst_n      (rst_n),
+        .data_in    (s_axis_tdata),
+        .data_in_valid(s_axis_tvalid),
+        .vector_last(s_axis_tlast),
+        .ready      (s_axis_tready),
+        .busy       (busy), // Stall if engine is busy or streaming
+        .buffer_out (in_bus),
+        .vector_done(vector_done)
     );
 
-    /* ---------------- ACTIVATION MEMORY ---------------- */
 
-    logic signed [ACC_W-1:0] act_mem [0:N_LAYERS-1][0:N_HIDDEN-1];
+    // --- 3. WEIGHT STORAGE (BRAM) ---
+    /**
+     * Stores all layer weights in a linear space. 
+     * Indexed by L*H*I + h*I + i.
+     */
+    wmem_hidden #(
+        .DATA_W(DATA_W),
+        .N_IN(N_IN),
+        .N_HIDDEN(N_HIDDEN),
+        .N_LAYERS(N_LAYERS)
+    ) wmem_inst (
+        .clk        (clk),
+        .rst_n      (rst_n),
+        .w_wr_en    (w_wr_en),
+        .w_addr_l   (w_addr_l),
+        .w_addr_h   (w_addr_h),
+        .w_addr_i   (w_addr_i),
+        .w_data     (w_data),
+        .raddr      (w_raddr),
+        .rdata      (w_rdata)
+    );
 
-    /* ---------------- LAYER INPUT MUX ---------------- */
 
-    logic signed [N_IN*ACC_W-1:0] layer_invec;
+    // --- 4. LAYER MULTIPLEXING LOGIC ---
+    /**
+     * Logic to decide if we use the external input vector (Layer 0)
+     * or computed activations from the internal buffer (Layer > 0).
+     */
+    logic [N_IN*DATA_W-1:0] layer_invec_reg;
+    logic                   layer_invec_valid;
+    logic                   start_compute_pulse;
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            layer_invec <= '0;
+            layer_invec_reg   <= '0;
+            layer_invec_valid <= 1'b0;
         end else begin
-             for (i = 0; i < N_IN; i++) begin
-                if (cur_layer == 0)
-                    // sign-extend input data to ACC_W
-                    layer_invec[(i+1)*ACC_W-1 -: ACC_W]
-                        <= {{(ACC_W-DATA_W){invec_bus[(i+1)*DATA_W-1]}},
-                        invec_bus[(i+1)*DATA_W-1 -: DATA_W]};
-                else if (i < N_HIDDEN)
-                    // Use full-precision stored activation
-                    layer_invec[(i+1)*ACC_W-1 -: ACC_W]
-                    <= act_mem[cur_layer-1][i];
-                else
-                    layer_invec[(i+1)*ACC_W-1 -: ACC_W] <= '0;
+            // Capture external vector for L0
+            if (cur_layer == 0 && vector_done) begin
+                layer_invec_reg   <= in_bus;
+                layer_invec_valid <= 1'b1;
+            end 
+            // Reuse activations for higher layers
+            else if (cur_layer != 0 && layer_done) begin
+                for (int i=0; i < N_IN; i++) begin
+                    layer_invec_reg[i*DATA_W +: DATA_W] <= (i < N_HIDDEN) ? act_mem[i] : '0;
+                end
+                layer_invec_valid <= 1'b1;
+            end 
+            // Clear valid flag once MAC accepts
+            else if (mac_accept) begin
+                layer_invec_valid <= 1'b0;
+            end
+        end
+    end
+
+    // MAC Compute Trigger Pulse
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) 
+            start_compute_pulse <= 1'b0;
+        else if (layer_invec_valid)
+            start_compute_pulse <= 1'b1;
+        else if (mac_accept)
+            start_compute_pulse <= 1'b0;
+    end
+
+    // Register trigger for timing alignment
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) start_compute_req <= 1'b0;
+        else        start_compute_req <= start_compute_pulse;
+    end
+
+
+    // --- 5. BIT-SERIAL MAC ENGINE ---
+    /**
+     * Performs vector-matrix multiplication for the current layer.
+     */
+    mac_engine #(
+        .DATA_W(DATA_W),
+        .PRECISION(PRECISION),
+        .N_IN(N_IN),
+        .N_HIDDEN(N_HIDDEN),
+        .N_LAYERS(N_LAYERS),
+        .P(P)
+    ) mac_inst (
+        .clk            (clk),
+        .rst_n          (rst_n),
+        .layer_idx      (cur_layer),
+        .start_compute  (start_compute_req),
+        .invec_bus      (layer_invec_reg),
+        .wmem_raddr     (w_raddr),
+        .wmem_rdata     (w_rdata),
+        .out_data       (relu_in),
+        .out_valid      (relu_in_v),
+        .out_ready      (relu_in_r),
+        .busy           (mac_busy),
+        .layer_done     (layer_done)
+    );
+
+
+    // --- 6. ReLU ACTIVATION UNIT ---
+    /**
+     * Nonlinearity module with skid buffering for backpressure support.
+     */
+    relu_activation #(
+        .ACC_W(ACC_W)
+    ) relu_inst (
+        .clk        (clk),
+        .rst_n      (rst_n),
+        .in_data    (relu_in),
+        .in_valid   (relu_in_v),
+        .in_ready   (relu_in_r),
+        .out_ready  (relu_out_r),
+        .out_data   (relu_out),
+        .out_valid  (relu_out_v)
+    );
+
+
+    // --- 7. MAIN CONTROLLER & MEMORY MANAGER ---
+    /**
+     * Managed layer progression and internal activation storage.
+     */
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            cur_layer <= '0;
+            busy      <= 1'b0;
+            act_idx   <= '0;
+            out_idx   <= '0;
+        end else begin
+            // 7a. Input Received -> Start Engine
+            if (vector_done && cur_layer == 0) begin
+                busy <= 1'b1;
+            end
+
+            // 7b. Save Middle Activations to internal RAM
+            if (relu_out_v && relu_out_r && cur_layer != N_LAYERS-1) begin
+                act_mem[act_idx] <= relu_out[DATA_W-1:0]; // truncate to DATA_W
+                act_idx <= act_idx + 1;
+            end
+
+            // 7c. Layer Transition logic
+            if (layer_done) begin
+                act_idx <= '0;
+                // Last layer completed?
+                if (cur_layer == N_LAYERS-1) begin
+                    // Move to streaming
+                end else begin
+                    cur_layer <= cur_layer + 1;
+                end
+            end
+
+            // 7d. Master Stream Counter
+            if (m_axis_tvalid && m_axis_tready) begin
+                if (out_idx == N_HIDDEN-1) begin
+                    out_idx   <= '0;
+                    cur_layer <= '0;
+                    busy      <= 1'b0;
+                end else begin
+                    out_idx <= out_idx + 1;
+                end
             end
         end
     end
 
 
+    // --- 8. OUTPUT INTERFACE (MASTER AXI-S) ---
+    /**
+     * Final layer results bypass the internal memory and stream out.
+     */
+    assign relu_out_r = (cur_layer == N_LAYERS-1) ? m_axis_tready : 1'b1;
 
-    // Hidden-layer weight memory
-     
-    wmem_hidden #(
-        .DATA_W   (DATA_W),
-        .N_IN     (N_IN),
-        .N_HIDDEN (N_HIDDEN),
-        .N_LAYERS (N_LAYERS)
-    ) u_wmem_hidden (
-        .clk      (clk),
-        .rst_n    (rst_n),
-        .w_wr_en  (w_wr_en),
-        .w_addr_l (w_addr_l),
-        .w_addr_h (w_addr_h),
-        .w_addr_i (w_addr_i),
-        .w_data   (w_data),
-        .raddr    (wmem_raddr),
-        .rdata    (wmem_rdata)
-    );
+    assign m_axis_tdata  = (cur_layer == N_LAYERS-1) ? relu_out[DATA_W-1:0] : '0;
+    assign m_axis_tvalid = (cur_layer == N_LAYERS-1) && relu_out_v;
 
-     
-    // MAC Engine (AXI backpressure)
+    // tlast signals the end of the final layer's vector
+    assign m_axis_tlast = (cur_layer == N_LAYERS-1) && (out_idx == N_HIDDEN-1) && m_axis_tvalid;
 
-    logic start_compute_req;
-    logic mac_accept;
-    logic layer_invec_valid;
+    // Pulse signal MAC Engine accepted the request
+    assign mac_accept = start_compute_req && mac_busy;
 
-    always_ff @(posedge clk or negedge rst_n) begin
-        if (!rst_n)
-            layer_invec_valid <= 1'b0;
-        // Set when input or previous layer completes
-        else if ((cur_layer == 0 && vector_done) ||
-            (cur_layer != 0 && layer_done))
-            layer_invec_valid <= 1'b1;
-
-    // Clear only when MAC accepts
-    else if (mac_accept)
-        layer_invec_valid <= 1'b0;
-    end
-
-    assign mac_accept = start_compute_req && !busy && layer_invec_valid;
-
-    /* ---------------- START COMPUTE REQUEST ---------------- */
-    always_ff @(posedge clk) begin
-        if (!rst_n)
-            start_compute_req <= 1'b0;
-
-        // Raise request
-        else if ((cur_layer == 0 && vector_done) ||
-                (cur_layer != 0 && layer_done))
-            start_compute_req <= 1'b1;
-
-        // Clear ONLY when MAC accepts it
-        else if (mac_accept)
-            start_compute_req <= 1'b0;
-    end
-
-    // Layer counter
-
-    always_ff @(posedge clk) begin
-        if (!rst_n)
-            cur_layer <= '0;
-        else if (layer_done) begin
-            if (cur_layer == N_LAYERS-1)
-                cur_layer <= '0;
-            else
-                cur_layer <= cur_layer + 1'b1;
-        end
-    end
-
-    assign mac_out_ready = relu_in_ready;
-
-    mac_engine #(
-        .DATA_W    (DATA_W),
-        .PRECISION (PRECISION),
-        .N_IN      (N_IN),
-        .N_HIDDEN  (N_HIDDEN),
-        .N_LAYERS  (N_LAYERS),
-        .P         (P)
-    ) u_mac_engine (
-        .clk           (clk),
-        .rst_n         (rst_n),
-        .layer_idx     (cur_layer),
-        .start_compute (start_compute_req),
-        .invec_bus     (layer_invec),
-        .wmem_raddr    (wmem_raddr),
-        .wmem_rdata    (wmem_rdata),
-        .out_data      (mac_out_data),
-        .out_valid     (mac_out_valid),
-        .out_ready     (mac_out_ready),
-        .layer_done    (layer_done),
-        .busy          (busy)
-    );
-
-     
-    // ReLU (AXI-compliant)
-     
-    assign relu_out_ready = (cur_layer == N_LAYERS-1) ? m_axis_tready : 1'b1;
-
-    relu_activation #(
-        .ACC_W (ACC_W)
-    ) u_relu_activation (
-        .clk       (clk),
-        .rst_n     (rst_n),
-        .in_data   (mac_out_data),
-        .in_valid  (mac_out_valid),
-        .out_ready (relu_out_ready),
-        .out_data  (relu_out_data),
-        .out_valid (relu_out_valid),
-        .in_ready  (relu_in_ready)
-    );
-
-    // Store activations into activation memory
-
-    logic [$clog2((N_HIDDEN>1)?N_HIDDEN:2)-1:0] act_idx;
-
-    always_ff @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin
-            // Reset activation memory
-            for (l = 0; l < N_LAYERS; l++)
-                for (h = 0; h < N_HIDDEN; h++)
-                    act_mem[l][h] <= '0;
-
-            act_idx <= '0;
-        end
-
-        else begin
-        /* ---------------- RESET INDEX AT LAYER BOUNDARY ---------------- */
-        if (layer_done) begin
-            act_idx <= '0;
-        end
-
-        /* ---------------- STORE ACTIVATION ---------------- */
-        else if (relu_out_valid && relu_in_ready && cur_layer < N_LAYERS-1) begin
-            act_mem[cur_layer][act_idx] <= relu_out_data;
-
-            if (act_idx < N_HIDDEN-1)
-                act_idx <= act_idx + 1'b1;
-        end
-
-        
-    end
-    end
-
-     
-    // AXI OUTPUT HANDSHAKE
-     
-    logic [$clog2((N_HIDDEN>1)?N_HIDDEN:2)-1:0] out_idx;
-
-    /* ---------------- OUTPUT INDEX ---------------- */
-    always_ff @(posedge clk) begin
-        if (!rst_n)
-            out_idx <= '0;
-
-        // reset index when starting final layer
-        else if (layer_done && cur_layer == N_LAYERS-2)
-            out_idx <= '0;
-
-        // increment only on successful transfer
-        else if (m_axis_tvalid && m_axis_tready)
-            out_idx <= out_idx + 1'b1;
-    end
-
-    /* ---------------- AXI OUTPUT ---------------- */
-    assign m_axis_tdata =
-        (cur_layer == N_LAYERS-1) ? relu_out_data : '0;
-
-    assign m_axis_tvalid =
-        (cur_layer == N_LAYERS-1) && relu_out_valid;
-
-    /* ---------------- TLAST (FIXED) ---------------- */
-    assign m_axis_tlast =
-        (cur_layer == N_LAYERS-1) &&
-        (out_idx == N_HIDDEN-1) &&
-        m_axis_tvalid &&
-        m_axis_tready;
-
-`ifndef SYNTHESIS
-    always_ff @(posedge clk) begin
-        if (w_wr_en && busy)
-            $warning("Writing weights while MAC is busy");
-    end
-`endif
+    // Engine is ready for next vector only when IDLE and not busy
+    assign s_axis_tready = !busy;
 
 endmodule

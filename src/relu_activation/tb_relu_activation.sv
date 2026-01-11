@@ -1,26 +1,34 @@
 `timescale 1ns/1ps
 
+/**
+ * Module: tb_relu_activation
+ * Description: Testbench for the ReLU activation module.
+ *              Employs an AXI-Stream bus monitor and scoreboard to verify 
+ *              clipping logic and backpressure stability.
+ */
 module tb_relu_activation;
 
    
-    // Configuration & Signal Declaration
+    // 1. Configuration & Signal Declaration
+    parameter int ACC_W = 16;   // Small bit-width for trace readability
 
-    parameter int ACC_W = 16; // Using 16 bits for easier readability in logs
-                              // (DUT defaults to 64, both work fine)
+    logic                     clk;       // master clock
+    logic                     rst_n;     // chip reset
+    logic signed [ACC_W-1:0]  in_data;   // source data
+    logic                     in_valid;  // source valid
+    logic                     out_ready; // destination ready (backpressure)
+    logic signed [ACC_W-1:0]  out_data;  // DUT activation output
+    logic                     out_valid; // DUT valid strobe
 
-    logic                     clk;
-    logic                     rst_n;
-    logic signed [ACC_W-1:0]  in_data;
-    logic                     in_valid;
-    logic                     out_ready;
-    logic signed [ACC_W-1:0]  out_data;
-    logic                     out_valid;
-
-    // Simulation control
+    // Simulation Stats
     int error_count = 0;
     int transaction_count = 0;
 
-    // Queue to act as the "Golden Reference" (Scoreboard)
+    /**
+     * Golden Reference (Scoreboard Queue)
+     * Every valid input accepted by the DUT is transformed by the ReLU 
+     * function and stored in this queue to be compared against the DUT output.
+     */
     logic signed [ACC_W-1:0] expected_queue [$];
 
     
@@ -38,29 +46,30 @@ module tb_relu_activation;
     );
 
 
-    // 3. Clock Generation
-
+    // 3. Clock Generation (100 MHz)
     initial begin
         clk = 0;
-        forever #5 clk = ~clk; // 10ns period (100 MHz)
+        forever #5 clk = ~clk; 
     end
 
 
-    // 4. Scoreboard / Monitor (Self-Checking Logic)
+    // 4. Scoreboard / Monitor Logic (Self-Checking)
     
-    // INPUT MONITOR: Capture what goes IN, calculate expected ReLU, push to queue
-    // FIXED: Only push when DUT actually accepts the input
-    // DUT accepts when: (out_ready || !out_valid) && in_valid
+    /**
+     * INPUT MONITOR:
+     * Samples the input bus on every clock edge. If (valid && ready), 
+     * it calculates the MIN(0, x) and stores it as the 'expected' result.
+     */
     always @(posedge clk) begin
         if (rst_n && in_valid) begin
-            // Check if DUT can accept input (same logic as RTL)
+            // Manual handshake calculation mirroring RTL behavior (skid buffer logic)
             logic can_accept;
             can_accept = out_ready || !out_valid;
             
             if (can_accept) begin
                 logic signed [ACC_W-1:0] expected_val;
                 
-                // The Golden Logic (ReLU)
+                // ReLU Golden Logic: Clip negatives to zero
                 if (in_data < 0) 
                     expected_val = '0;
                 else 
@@ -71,140 +80,136 @@ module tb_relu_activation;
         end
     end
 
-    // OUTPUT MONITOR: Capture what comes OUT, pop from queue, compare
-    // Only pop when handshake completes (out_valid && out_ready)
-    always @(posedge clk) begin
-        if (rst_n && out_valid && out_ready) begin 
+    /**
+     * OUTPUT MONITOR:
+     * Verifies every word that leaves the Master AXI-Stream interface.
+     */
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            transaction_count <= 0;
+            error_count <= 0;
+        end else if (out_valid && out_ready) begin 
             logic signed [ACC_W-1:0] expected_pop;
             
             if (expected_queue.size() == 0) begin
-                $error("[Time %0t] Error: Unexpected output! Queue is empty but out_valid is high.", $time);
+                $error("[FAIL] Unexpected output: Queue is empty but out_valid is high!");
                 error_count++;
             end else begin
+                // Pull from head of scoreboard queue
                 expected_pop = expected_queue.pop_front();
-                
                 transaction_count++;
                 
+                // Comparison check
                 if (out_data !== expected_pop) begin
-                    $error("[Time %0t] MISMATCH! Expected: %0d, Got: %0d", $time, expected_pop, out_data);
+                    $error("[FAIL] Word %0d Mismatch: Exp=%d, Got=%d", transaction_count, expected_pop, out_data);
                     error_count++;
-                end else begin
-                    // Optional: Uncomment for verbose logging
-                    // $display("[Time %0t] OK: Out=%0d", $time, out_data); 
                 end
             end
         end
     end
 
 
-    // 5. Test Stimulus
+    // 5. Test Stimulus Executive Sequence
 
     initial begin
-        // Setup Waveform dumping (viewable in GTKWave or similar)
         $dumpfile("dump.vcd");
         $dumpvars(0, tb_relu_activation);
 
-        $display("---------------------------------------------------");
-        $display(" Starting ReLU Activation Testbench ");
-        $display("---------------------------------------------------");
+        $display("\n---------------------------------------------------");
+        $display("   ReLU ACTIVATION MODULE VERIFICATION   ");
+        $display("---------------------------------------------------\n");
 
-        // Initialize inputs
+        // Init signals
         rst_n     = 0;
         in_valid  = 0;
         in_data   = 0;
-        out_ready = 1;  // ADDED: Initialize out_ready (always ready for now)
+        out_ready = 1; 
 
-        // Apply Reset
         repeat(5) @(posedge clk);
-        rst_n = 1;
+        rst_n = 1; // Release reset
         @(posedge clk);
-        $display("Reset released.");
 
-        // --- TEST CASE 1: Basic Corner Cases ---
-        $display("\n--- Test Case 1: Corner Cases (0, -1, Max, Min) ---");
-        drive_single_input(0);                 // Zero
-        drive_single_input(-1);                // Just below zero
-        drive_single_input(1);                 // Just above zero
-        drive_single_input((1<<(ACC_W-1))-1);  // Max Positive
-        drive_single_input(-(1<<(ACC_W-1)));   // Max Negative
+        // --- TEST 1: Edge Cases (0, -1, Max, Min) ---
+        $display("[TEST 1] Feeding critical edge cases...");
+        drive_single_input(0);                 
+        drive_single_input(-1);                
+        drive_single_input(1);                 
+        drive_single_input((1<<(ACC_W-1))-1);  // Max +
+        drive_single_input(-(1<<(ACC_W-1)));   // Max -
         
-        // Wait for pipeline to drain
-        repeat(5) @(posedge clk);
+        repeat(5) @(posedge clk); // Pipeline drain
 
 
-        // --- TEST CASE 2: Random Values with Gaps ---
-        $display("\n--- Test Case 2: Random Inputs with Random Gaps ---");
-         repeat(20) begin
-             logic signed [ACC_W-1:0] rand_data;
-             
-             rand_data = $urandom();
-             drive_single_input(rand_data);
-             
+        // --- TEST 2: Random Values with Intervals ---
+        $display("[TEST 2] Random inputs with variable gaps...");
+         repeat(50) begin
+             drive_single_input($random % 500); 
+             // Random stall between words
              repeat($urandom_range(0, 3)) @(posedge clk);
          end
-        repeat(5) @(posedge clk); // Drain
+        repeat(5) @(posedge clk);
 
 
-        // --- TEST CASE 3: Streaming Burst (Back-to-Back) ---
-        $display("\n--- Test Case 3: Streaming Burst (100%% utilization) ---");
+        // --- TEST 3: Full-Throttle Streaming ---
+        $display("[TEST 3] 100%% throughput burst test...");
         in_valid <= 1'b1;
-        repeat(50) begin // Stream 50 items consecutively
-            in_data <= $urandom();
+        repeat(100) begin
+            in_data <= $random;
             @(posedge clk);
         end
         in_valid <= 1'b0;
-        in_data  <= '0;
-        
-        repeat(10) @(posedge clk); // Drain pipeline
+        repeat(5) @(posedge clk);
 
 
-        // --- TEST CASE 4: Backpressure Test ---
-        $display("\n--- Test Case 4: Backpressure (out_ready toggling) ---");
+        // --- TEST 4: Backpressure Stress ---
+        $display("[TEST 4] Downstream Backpressure Stress-Test...");
         fork
+            // Thread A: Rapidly push data
             begin
-                // Send 10 values
-                repeat(10) begin
-                    drive_single_input($urandom());
+                repeat(20) begin
+                    drive_single_input($random);
                     repeat($urandom_range(0, 2)) @(posedge clk);
                 end
             end
+            // Thread B: Rapidly toggle out_ready (stalling the DUT randomly)
             begin
-                // Randomly assert/deassert out_ready
-                repeat(30) begin
+                repeat(40) begin
                     out_ready <= $urandom_range(0, 1);
                     @(posedge clk);
                 end
-                out_ready <= 1; // Restore to always ready
+                out_ready <= 1; // restore
             end
         join
         
-        repeat(10) @(posedge clk); // Drain
+        repeat(10) @(posedge clk);
 
 
-        // End of Simulation
-
-        $display("---------------------------------------------------");
+        // Final Result Log
+        $display("\n---------------------------------------------------");
         if (error_count == 0 && expected_queue.size() == 0) begin
-            $display(" TEST PASSED! Processed %0d transactions.", transaction_count);
+            $display("   STATUS: SUCCESS");
+            $display("   Successful Handshakes: %0d", transaction_count);
         end else begin
-            $display(" TEST FAILED. Errors: %0d, Pending in Queue: %0d", error_count, expected_queue.size());
+            $display("   STATUS: FAILED");
+            $display("   Errors: %0d | In-flight words: %0d", error_count, expected_queue.size());
         end
-        $display("---------------------------------------------------");
+        $display("---------------------------------------------------\n");
         
         $finish;
     end
 
     
-    // Helper Task: Drive a single value for one clock cycle
-
+    // TASK: drive_single_input
+    // Encapsulates a one-cycle valid data transfer
     task drive_single_input(input logic signed [ACC_W-1:0] data);
         begin
             in_data  <= data;
             in_valid <= 1'b1;
             @(posedge clk);
             in_valid <= 1'b0;
-            in_data  <= 'x; // Make it obvious in waves if we read invalid data
+            in_data  <= 'x; 
         end
     endtask
 
 endmodule
+

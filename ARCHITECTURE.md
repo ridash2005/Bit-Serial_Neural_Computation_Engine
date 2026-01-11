@@ -44,3 +44,24 @@ graph TD
     ReLU --> Output[AXI-Stream Output]
     WM[Weight Memory] --> MAC
 ```
+
+---
+
+## Hardware Implementation Details
+
+### 1. Reset Strategy
+The design uses **Asynchronous Reset** (`rst_n`, active-low) for all control registers across all modules. This ensures reliable system initialization and is compatible with standard FPGA power-up reset patterns.
+
+### 2. Pipelining & Timing Alignment
+To support high-speed operation (100MHz+), the top-level layer multiplexer is registered. To maintain functional correctness, the `start_compute` signal is pipelined by 1-cycle to align with the arrival of the registered input vector at the MAC engine.
+
+### 3. Memory Optimization
+The `wmem_hidden` module is specifically coded to infer **Block RAM (BRAM)** on Xilinx and Intel FPGAs. It utilizes a pipelined read-after-write strategy to maximize bandwidth and minimize combinatorial logic.
+
+### 4. IP Packaging Support
+The top-level port list includes Xilinx Interface Attributes:
+*   `X_INTERFACE_INFO`: Standardizes AXI-Stream, Clock, and Reset interfaces.
+*   `ASSOCIATED_BUSIF`: Links AXI interfaces to the clock for automatic DRC in IP Integrator.
+
+This configuration allows the engine to be packaged as a custom IP block in Vivado for seamless drag-and-drop integration into larger SoC designs.
+

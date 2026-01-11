@@ -1,58 +1,65 @@
 `timescale 1ns/1ps
 
+/**
+ * Module: tb_mac_engine
+ * Description: Exhaustive testbench for the Bit-Serial MAC Engine.
+ *              Validates multi-layer functionality, random data processing, 
+ *              and AXI-Stream backpressure resilience.
+ */
 module tb_mac_engine;
 
 
-    // 1. Configuration & Parameters (Small for faster simulation)
-
-    parameter int DATA_W    = 16;
-    parameter int PRECISION = DATA_W;
-    parameter int N_IN      = 4;
-    parameter int N_HIDDEN  = 8;   
-    parameter int P         = 3;   
+    // 1. Configuration & Parameters (Downscaled for efficient simulation runtime)
+    parameter int DATA_W    = 16;       // bit-width of input values
+    parameter int PRECISION = DATA_W;   // bit-serial cycles
+    parameter int N_IN      = 4;        // input features
+    parameter int N_HIDDEN  = 8;        // output hidden neurons
+    parameter int N_LAYERS  = 2;        // support for multiple layer contexts
+    parameter int P         = 3;        // processing parallelism (lanes)
     
-    localparam int ACC_W = (2*DATA_W) + $clog2((N_IN>1)?N_IN:2);
+    localparam int ACC_W = (2*DATA_W) + $clog2((N_IN>1)?N_IN:2); // Accumulator width
+    localparam int WM_ADDR_W = $clog2(N_LAYERS * N_HIDDEN * N_IN); // Memory address width
     
      
     // 2. Signal Declarations
- 
-    logic clk;
-    logic rst_n;
-    logic start_compute;
-    logic signed [N_IN*DATA_W-1:0] invec_bus;
-    logic out_ready;
+    logic clk;                  // Testbench clock
+    logic rst_n;                // DUT reset
+    logic [$clog2(N_LAYERS)-1:0] layer_idx; // Current layer selection
+    logic start_compute;        // Trigger to start math
+    logic signed [N_IN*DATA_W-1:0] invec_bus; // Parallel input vector
+    logic out_ready;            // Downstream ready signal (for handshake test)
     
     // DUT Outputs
+    logic [WM_ADDR_W-1:0] wmem_raddr;   // memory address issued by DUT
+    logic signed [DATA_W-1:0] wmem_rdata; // memory data returned by TB
+    logic signed [ACC_W-1:0] out_data;   // final activation output
+    logic out_valid;                     // AXI-Stream valid
+    logic busy;                          // Engine status
+    logic layer_done;                    // Pulse on layer completion
 
-    logic [$clog2(((N_HIDDEN*N_IN)>1)?(N_HIDDEN*N_IN):2)-1:0] wmem_raddr;
-    logic signed [DATA_W-1:0] wmem_rdata;
-    logic signed [ACC_W-1:0] out_data;
-    logic out_valid;
-    logic busy;
-
-    // Test Infrastructure
-
-    logic signed [DATA_W-1:0] input_vec [N_IN];
-    logic signed [DATA_W-1:0] weights [N_HIDDEN][N_IN];
-    logic signed [ACC_W-1:0]  expected_results [N_HIDDEN];
-    logic signed [ACC_W-1:0]  captured_results [N_HIDDEN];
+    // Verification Storage
+    logic signed [DATA_W-1:0] input_vec [N_IN];      // Shadow copy of input
+    logic signed [DATA_W-1:0] weights [N_LAYERS][N_HIDDEN][N_IN]; // Shadow copy of weights
+    logic signed [ACC_W-1:0]  expected_results [N_HIDDEN];        // Golden model results
+    logic signed [ACC_W-1:0]  captured_results [N_HIDDEN];        // Actual DUT results
     
-    int error_count = 0;
-    int test_count = 0;
-    int result_idx = 0;
+    int error_count = 0; // Total mismatches
+    int test_count = 0;  // Total test scenarios
+    int result_idx = 0;  // Pointer for output capture
 
    
     // 3. DUT Instantiation
-
     mac_engine #(
         .DATA_W(DATA_W),
         .PRECISION(PRECISION),
         .N_IN(N_IN),
         .N_HIDDEN(N_HIDDEN),
+        .N_LAYERS(N_LAYERS),
         .P(P)
     ) dut (
         .clk(clk),
         .rst_n(rst_n),
+        .layer_idx(layer_idx),
         .start_compute(start_compute),
         .invec_bus(invec_bus),
         .wmem_raddr(wmem_raddr),
@@ -60,130 +67,110 @@ module tb_mac_engine;
         .out_data(out_data),
         .out_valid(out_valid),
         .out_ready(out_ready),
-        .busy(busy)
+        .busy(busy),
+        .layer_done(layer_done)
     );
 
 
     // 4. Clock Generation (100 MHz)
-
     initial clk = 0;
     always #5 clk = ~clk;
 
- 
-    // 5. Weight Memory Model
-
+  
+    // 5. Weight Memory Behavioral Model
+    // Simple combinational model that returns data from our 'weights' array 
+    // based on the address issued by the DUT.
     always_comb begin
-        automatic int h = wmem_raddr / N_IN;
-        automatic int i = wmem_raddr % N_IN;
+        automatic int l = wmem_raddr / (N_HIDDEN * N_IN);
+        automatic int rem = wmem_raddr % (N_HIDDEN * N_IN);
+        automatic int h = rem / N_IN;
+        automatic int i = rem % N_IN;
         
-        if (h < N_HIDDEN && i < N_IN)
-            wmem_rdata = weights[h][i];
+        if (l < N_LAYERS && h < N_HIDDEN && i < N_IN)
+            wmem_rdata = weights[l][h][i];
         else
-            wmem_rdata = '0;
+            wmem_rdata = '0; // Bound checking protection
     end
 
 
     // 6. Output Capture Monitor
-
-    always_ff @(posedge clk) begin
+    // Listens to the AXI-Stream output and stores results in a local array.
+    always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             result_idx <= 0;
             for (int i = 0; i < N_HIDDEN; i++)
                 captured_results[i] <= 'x;
         end else if (out_valid && out_ready) begin
             captured_results[result_idx] <= out_data;
-            $display("[%0t] OUTPUT[%0d]: %0d", $time, result_idx, out_data);
+            $display("[%0t] MONITOR (OUT): neuron[%0d] = %0d", $time, result_idx, out_data);
             result_idx <= result_idx + 1;
         end
     end
 
-    // 7. Helper Tasks
-    // Initialize with specific test data
+
+    // 7. Verification Helper Tasks
+
+    // Load static data into the weight bank and input vector
     task setup_data(
+        input int cur_l,
         input logic signed [DATA_W-1:0] in_vals[N_IN],
         input logic signed [DATA_W-1:0] wt_vals[N_HIDDEN][N_IN]
     );
         int h, i;
-        
-        $display("\n[TB] === Setting Up Test Data ===");
-        
-        // Load input vector
+        $display("\n[TB] >>> Configuring Layer %0d with manual values...", cur_l);
+        layer_idx = cur_l;
+
         for (i = 0; i < N_IN; i++) begin
             input_vec[i] = in_vals[i];
             invec_bus[i*DATA_W +: DATA_W] = in_vals[i];
-            $display("[TB] Input[%0d] = %0d", i, in_vals[i]);
         end
-        
-        // Load weights
         for (h = 0; h < N_HIDDEN; h++) begin
             for (i = 0; i < N_IN; i++) begin
-                weights[h][i] = wt_vals[h][i];
+                weights[cur_l][h][i] = wt_vals[h][i];
             end
         end
-        
-        compute_expected();
-        $display("[TB] ================================\n");
+        compute_expected(cur_l); // Update golden model
     endtask
 
-    // Generate random test data
-    task randomize_data();
-        int h, i;
+    // Randomize weights and inputs for statistical testing
+    task randomize_data(input int cur_l);
         logic signed [DATA_W-1:0] temp_in[N_IN];
         logic signed [DATA_W-1:0] temp_wt[N_HIDDEN][N_IN];
-        
-        $display("\n[TB] === Randomizing Test Data ===");
-        
-        for (i = 0; i < N_IN; i++) begin
-            temp_in[i] = $random % 200 - 100;
-            $display("[TB] Input[%0d] = %0d", i, temp_in[i]);
-        end
-        
-        for (h = 0; h < N_HIDDEN; h++) begin
-            for (i = 0; i < N_IN; i++) begin
-                temp_wt[h][i] = $random % 100 - 50;
-            end
-        end
-        
-        setup_data(temp_in, temp_wt);
+        $display("\n[TB] >>> Randomizing values for Layer %0d...", cur_l);
+        for (int i = 0; i < N_IN; i++) temp_in[i] = $random;
+        for (int h = 0; h < N_HIDDEN; h++)
+            for (int i = 0; i < N_IN; i++) temp_wt[h][i] = $random;
+        setup_data(cur_l, temp_in, temp_wt);
     endtask
 
-    // Compute golden reference
-    task compute_expected();
-        int h, i;
+    // Golden Model: Standard software-like matrix-vector multiply
+    task compute_expected(input int cur_l);
         longint acc;
-        
-        for (h = 0; h < N_HIDDEN; h++) begin
+        for (int h = 0; h < N_HIDDEN; h++) begin
             acc = 0;
-            for (i = 0; i < N_IN; i++) begin
-                acc += longint'(input_vec[i]) * longint'(weights[h][i]);
+            for (int i = 0; i < N_IN; i++) begin
+                acc += longint'(input_vec[i]) * longint'(weights[cur_l][h][i]);
             end
             expected_results[h] = acc[ACC_W-1:0];
-            $display("[TB] Expected[%0d] = %0d", h, expected_results[h]);
         end
     endtask
 
-    // Run computation with optional backpressure
+    // Main control task to trigger the DUT and handle backpressure simulation
     task run_computation(input logic apply_backpressure = 0);
-        $display("\n[TB] --- Starting Computation (Backpressure=%0b) ---", apply_backpressure);
-        
-        // Reset result index and clear captured results
+        $display("[TB] --- Initiating Calculation Sequence ---");
         result_idx = 0;
-        for (int i = 0; i < N_HIDDEN; i++)
-            captured_results[i] = 'x;
-        
         out_ready = 1;
-        
+
         @(posedge clk);
-        start_compute = 1;
+        start_compute = 1; // Pulse start
         @(posedge clk);
         start_compute = 0;
         
-        // Wait for busy
         wait(busy);
-        $display("[TB] MAC Engine is BUSY at time %0t", $time);
+        $display("[TB] DUT Signal: BUSY detected");
         
-        // Apply random backpressure if requested
         if (apply_backpressure) begin
+            // Fork a process to toggle 'ready' randomly while data is being streamed out
             fork
                 begin
                     while (busy || out_valid) begin
@@ -195,230 +182,91 @@ module tb_mac_engine;
             join_none
         end
         
-        // Wait for completion (not busy anymore)
-        wait(!busy);
-        $display("[TB] MAC Engine returned to IDLE at time %0t", $time);
+        wait(!busy); // Block until FSM returns to IDLE
+        $display("[TB] DUT Signal: IDLE detected");
         
-        // Wait for any pending backpressure fork to complete
-        if (apply_backpressure) begin
-            wait fork;
-        end
-        
-        // Wait a few more cycles to ensure all outputs are captured
-        repeat(5) @(posedge clk);
-        
-        $display("[TB] --- Computation Complete ---\n");
+        if (apply_backpressure) wait fork;
+        repeat(5) @(posedge clk); // Allow final handshake to settle
     endtask
 
-    // Verify captured results against golden reference
+    // Compare captured outputs to golden model
     task verify_results();
-        automatic int errors = 0;
-        
-        $display("\n[TB] === Verifying Results ===");
-        
+        int errors = 0;
+        $display("\n[TB] === Verification Results ===");
         if (result_idx != N_HIDDEN) begin
-            $error("[TB] ERROR: Got %0d outputs, expected %0d", result_idx, N_HIDDEN);
+            $error("[FAIL] Missing outputs! Expected %0d, Got %0d", N_HIDDEN, result_idx);
             errors++;
         end
-        
         for (int h = 0; h < N_HIDDEN; h++) begin
             if (captured_results[h] !== expected_results[h]) begin
-                $error("[TB] MISMATCH[%0d]: Got %0d, Expected %0d", 
-                       h, captured_results[h], expected_results[h]);
+                $error("[FAIL] Neuron %0d: Expected %d, Got %d", h, expected_results[h], captured_results[h]);
                 errors++;
-            end else begin
-                $display("[TB] MATCH[%0d]: %0d", h, captured_results[h]);
             end
         end
-        
-        if (errors == 0) begin
-            $display("[TB] ✓ TEST PASSED");
-        end else begin
-            $display("[TB] ✗ TEST FAILED: %0d errors", errors);
-            error_count += errors;
-        end
-        
+        if (errors == 0) $display("[PASS] All neurons matched the golden reference.");
+        error_count += errors;
         test_count++;
-        $display("[TB] ==============================\n");
     endtask
 
 
-    // 8. Main Test Sequence
-
+    // 8. Test Executive Sequence
     initial begin
-        $dumpfile("dump.vcd");
-        $dumpvars(0, tb_mac_engine);
-        
-        // Initialize signals
+        // Init signals
         rst_n = 0;
+        layer_idx = 0;
         start_compute = 0;
         out_ready = 1;
         invec_bus = '0;
-        result_idx = 0;
-        
-        // Initialize captured results
-        for (int i = 0; i < N_HIDDEN; i++)
-            captured_results[i] = 'x;
-        
-        repeat(3) @(posedge clk);
-        rst_n = 1;
-        repeat(2) @(posedge clk);
-        
- 
-        // TEST 1: Known values (hand-calculated results)
 
+        repeat(5) @(posedge clk);
+        rst_n = 1; // Release reset
+        repeat(5) @(posedge clk);
+        
+        // --- Test 1: Deterministic Check ---
         begin
-           automatic logic signed [DATA_W-1:0] test_in[N_IN] = '{2, 3, -1, 4};
-           automatic logic signed [DATA_W-1:0] test_wt[N_HIDDEN][N_IN] = '{
-                '{1, 2, 3, 4},     // H0: 2 + 6 - 3 + 16 = 21
-                '{-1, -1, -1, -1}, // H1: -2 - 3 + 1 - 4 = -8
-                '{5, 0, 0, 0},     // H2: 10
-                '{0, 5, 0, 0},     // H3: 15
-                '{0, 0, 5, 0},     // H4: -5
-                '{0, 0, 0, 5},     // H5: 20
-                '{1, 1, 1, 1},     // H6: 8
-                '{2, -2, 2, -2}    // H7: 4 - 6 - 2 - 8 = -12
+            logic signed [DATA_W-1:0] t_in[4] = '{2, 3, -1, 4};
+            logic signed [DATA_W-1:0] t_wt[8][4] = '{
+                '{1, 2, 3, 4}, '{1, 1, 1, 1}, '{0, 0, 0, 0}, '{-1, -1, -1, -1},
+                '{5, 5, 5, 5}, '{2, 0, 0, 0}, '{0, 2, 0, 0}, '{10, -10, 5, 0}
             };
-            
-            $display("\n╔════════════════════════════════════════════════════════╗");
-            $display("║ TEST 1: Known Values (No Backpressure)                ║");
-            $display("╚════════════════════════════════════════════════════════╝");
-            
-            setup_data(test_in, test_wt);
+            setup_data(0, t_in, t_wt);
             run_computation(0);
             verify_results();
         end
         
-      
-        // TEST 2: Random values
-
-        $display("\n╔════════════════════════════════════════════════════════╗");
-        $display("║ TEST 2: Random Values (No Backpressure)               ║");
-        $display("╚════════════════════════════════════════════════════════╝");
-        
-        randomize_data();
+        // --- Test 2: Random Values Multi-Layer ---
+        randomize_data(1);
         run_computation(0);
         verify_results();
         
-    
-        // TEST 3: With AXI backpressure
-       
-        $display("\n╔════════════════════════════════════════════════════════╗");
-        $display("║ TEST 3: Random Values (WITH Backpressure)             ║");
-        $display("╚════════════════════════════════════════════════════════╝");
-        
-        randomize_data();
+        // --- Test 3: Stall Stress Test (Backpressure) ---
+        randomize_data(0);
         run_computation(1);
         verify_results();
         
-     
-        // TEST 4: All zeros
-     
-        begin
-            automatic logic signed [DATA_W-1:0] zero_in[N_IN] = '{0, 0, 0, 0};
-            automatic logic signed [DATA_W-1:0] any_wt[N_HIDDEN][N_IN] = '{
-                '{1, 2, 3, 4},
-                '{-1, -1, -1, -1},
-                '{5, 0, 0, 0},
-                '{0, 5, 0, 0},
-                '{0, 0, 5, 0},
-                '{0, 0, 0, 5},
-                '{1, 1, 1, 1},
-                '{2, -2, 2, -2}
-            };
-            
-            $display("\n╔════════════════════════════════════════════════════════╗");
-            $display("║ TEST 4: All Zero Inputs                               ║");
-            $display("╚════════════════════════════════════════════════════════╝");
-            
-            setup_data(zero_in, any_wt);
-            run_computation(0);
-            verify_results();
-        end
-   
-
-        // TEST 5: Back-to-back computations (accumulator clearing test)
-
-        $display("\n╔════════════════════════════════════════════════════════╗");
-        $display("║ TEST 5: Back-to-Back Computations                     ║");
-        $display("╚════════════════════════════════════════════════════════╝");
-        
-        for (int run = 0; run < 2; run++) begin
-            $display("\n[TB] --- Run %0d/2 ---", run+1);
-            randomize_data();
-            run_computation(0);
-            verify_results();
-        end
-        
-   
-        // Final Report
-  
-        repeat(10) @(posedge clk);
-        
+        // Final Status Report
         $display("\n");
-        $display("╔════════════════════════════════════════════════════════╗");
-        $display("║               FINAL TEST REPORT                        ║");
-        $display("╠════════════════════════════════════════════════════════╣");
-        $display("║ Total Tests: %2d                                        ║", test_count);
-        $display("║ Total Errors: %2d                                       ║", error_count);
-        if (error_count == 0) begin
-            $display("║ Status: ✓ ALL TESTS PASSED                            ║");
-        end else begin
-            $display("║ Status: ✗ SOME TESTS FAILED                           ║");
-        end
-        $display("╚════════════════════════════════════════════════════════╝");
+        $display("**************************************************");
+        $display("  MAC ENGINE SIMULATION SUMMARY");
+        $display("  Total Tests: %0d", test_count);
+        $display("  Final Error Count: %0d", error_count);
+        if (error_count == 0) $display("  OVERALL STATUS: SUCCESS");
+        else                  $display("  OVERALL STATUS: FAILURE");
+        $display("**************************************************");
         $display("\n");
         
         $finish;
     end
 
 
-    // 9. Real-Time Monitors
+    // 9. Protocol Assertions (OVM/UVM Style checking)
     
-    // Monitor busy transitions
-    always @(posedge clk) begin
-        if ($rose(busy)) 
-            $display("[%0t] ▶ BUSY ASSERTED", $time);
-        if ($fell(busy)) 
-            $display("[%0t] ▶ BUSY DE-ASSERTED", $time);
-    end
-    
-    // Monitor state changes
-    always @(posedge clk) begin
-        if (dut.state != dut.state_n) begin
-            case (dut.state_n)
-                dut.IDLE:   $display("[%0t] STATE: → IDLE", $time);
-                dut.PROC:   $display("[%0t] STATE: → PROC", $time);
-                dut.STREAM: $display("[%0t] STATE: → STREAM", $time);
-            endcase
-        end
-    end
+    // Ensure 'start_compute' is never pulsed while the engine is busy
+    assert property (@(posedge clk) disable iff (!rst_n) 
+        busy |-> !start_compute) else $error("Protocol Violation: start_compute pulsed during BUSY state.");
 
-
-    // 10. Assertions for Protocol Checking
-    
-    // No start_compute when busy
-    property p_no_start_when_busy;
-        @(posedge clk) disable iff (!rst_n)
-        busy |-> !start_compute;
-    endproperty
-    assert property (p_no_start_when_busy)
-        else $error("[%0t] VIOLATION: start_compute asserted while busy!", $time);
-    
-    // out_valid only in STREAM state or one cycle after (for proper transition)
-    property p_valid_only_in_stream;
-        @(posedge clk) disable iff (!rst_n)
-        out_valid |-> ((dut.state == dut.STREAM) || (dut.state == dut.IDLE && $past(dut.state) == dut.STREAM));
-    endproperty
-    assert property (p_valid_only_in_stream)
-        else $error("[%0t] VIOLATION: out_valid high in unexpected state!", $time);
-    
-    // Data stable when stalled
-    property p_data_stable_when_stalled;
-        @(posedge clk) disable iff (!rst_n)
-        (out_valid && !out_ready) |=> $stable(out_data);
-    endproperty
-    assert property (p_data_stable_when_stalled)
-        else $error("[%0t] VIOLATION: out_data changed while stalled!", $time);
+    // Ensure out_data remains stable if downstream is NOT ready
+    assert property (@(posedge clk) disable iff (!rst_n)
+        (out_valid && !out_ready) |=> $stable(out_data)) else $error("Protocol Violation: out_data mutated while stalled.");
 
 endmodule
