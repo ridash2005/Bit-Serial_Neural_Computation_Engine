@@ -5,10 +5,14 @@ module mac_engine #(
     parameter int unsigned PRECISION = DATA_W,
     parameter int unsigned N_IN      = 128,
     parameter int unsigned N_HIDDEN  = 64,
+    parameter int unsigned N_LAYERS  = 3,
     parameter int unsigned P         = 4
 )(
     input  logic clk,
     input  logic rst_n,
+
+    // Layer index
+    input  logic [$clog2(N_LAYERS)-1:0] layer_idx,
 
     // control
     input  logic start_compute,
@@ -17,7 +21,7 @@ module mac_engine #(
     input  logic signed [N_IN*DATA_W-1:0] invec_bus,
 
     // weight memory read
-    output logic [$clog2(((N_HIDDEN*N_IN)>1)?(N_HIDDEN*N_IN):2)-1:0] wmem_raddr,
+    output logic [$clog2(N_LAYERS*N_HIDDEN*N_IN)-1:0] wmem_raddr,
     input  logic signed [DATA_W-1:0] wmem_rdata,
 
     // output stream (to AXI adapter / ReLU)
@@ -26,7 +30,8 @@ module mac_engine #(
     input  logic out_ready,
 
     // status
-    output logic busy
+    output logic busy,
+    output logic layer_done
 );
 
 
@@ -37,6 +42,8 @@ module mac_engine #(
     localparam int BIT_W    = $clog2((PRECISION>1)?PRECISION:2);
     localparam int HID_W    = $clog2((N_HIDDEN>1)?N_HIDDEN:2);
     localparam int P_W      = $clog2((P>1)?P:2);
+    localparam int WMEM_ADDR_W = $clog2(N_LAYERS * N_HIDDEN * N_IN);
+    localparam logic [WMEM_ADDR_W-1:0] LSTRIDE  = N_HIDDEN * N_IN;
 
     typedef enum logic [1:0] { IDLE, PROC, STREAM } state_t;
     state_t state, state_n;
@@ -104,6 +111,7 @@ module mac_engine #(
         if (!rst_n) begin
             state <= IDLE;
             busy  <= 1'b0;
+            layer_done <= 1'b0;
 
             cur_hidden <= '0;
             cur_input  <= '0;
@@ -146,6 +154,7 @@ module mac_engine #(
                     out_valid    <= 1'b0;
                     bit_active   <= 1'b0;
                     mem_read_pending <= 1'b0;
+                    layer_done <= 1'b0;
 
                     if (start_compute) begin
                         for (int i=0; i<N_HIDDEN; i++)
@@ -164,7 +173,7 @@ module mac_engine #(
                         mem_wait <= 1'b1;
 
                         a_val <= invec_bus[cur_input*DATA_W +: DATA_W];
-                        wmem_raddr <= (cur_hidden * N_IN) + cur_input;
+                        wmem_raddr <= (layer_idx * LSTRIDE)+(cur_hidden * N_IN) + cur_input;
                     end
 
                     // memory pipeline
@@ -183,7 +192,7 @@ module mac_engine #(
                                 mem_lane <= mem_lane + 1'b1;
                                 mem_wait <= 1'b1;
                                 wmem_raddr <=
-                                    (cur_hidden + mem_lane + 1) * N_IN + cur_input;
+                                  (layer_idx * LSTRIDE) + (cur_hidden + mem_lane + 1) * N_IN + cur_input ;
                             end else begin
                                 mem_read_pending <= 1'b0;
                                 bit_active <= 1'b1;
@@ -251,10 +260,12 @@ module mac_engine #(
                                 out_valid     <= 1'b1;
                             end else begin
                                 out_valid <= 1'b0;
+                                layer_done <= 1'b1;
                             end
                         end
                     end else begin
                         out_valid <= 1'b0;
+                        layer_done <= 1'b0;
                     end
                 end
             endcase

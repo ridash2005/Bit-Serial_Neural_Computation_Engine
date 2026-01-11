@@ -5,6 +5,7 @@ module bitserial_nn #(
     parameter int PRECISION = DATA_W,
     parameter int N_IN      = 128,
     parameter int N_HIDDEN  = 64,
+    parameter int N_LAYERS = 3,
     parameter int P         = 4
 )(
     input  logic clk,
@@ -24,6 +25,7 @@ module bitserial_nn #(
     input  logic w_wr_en,
     input  logic [$clog2((N_HIDDEN>1)?N_HIDDEN:2)-1:0] w_addr_h,
     input  logic [$clog2((N_IN>1)?N_IN:2)-1:0]         w_addr_i,
+    input  logic [$clog2((N_LAYERS>1)?N_LAYERS:2)-1:0] w_addr_l,
     input  logic signed [DATA_W-1:0]                  w_data,
 
      
@@ -54,6 +56,9 @@ module bitserial_nn #(
     logic [WMEM_ADDR_W-1:0]    wmem_raddr;
     logic signed [DATA_W-1:0]  wmem_rdata;
 
+    logic [$clog2(N_LAYERS)-1:0] cur_layer;
+    logic                        layer_done;
+
     logic signed [ACC_W-1:0]   mac_out_data;
     logic                      mac_out_valid;
     logic                      mac_out_ready;
@@ -62,6 +67,8 @@ module bitserial_nn #(
     logic                      relu_out_valid;
     logic                      relu_out_ready;
     logic                      relu_in_ready;
+
+    integer i, l, h;
 
      
     // AXI INPUT HANDSHAKE
@@ -85,17 +92,48 @@ module bitserial_nn #(
         .vector_done   (vector_done)
     );
 
-     
+    /* ---------------- ACTIVATION MEMORY ---------------- */
+
+    logic signed [ACC_W-1:0] act_mem [0:N_LAYERS-1][0:N_HIDDEN-1];
+
+    /* ---------------- LAYER INPUT MUX ---------------- */
+
+    logic signed [N_IN*ACC_W-1:0] layer_invec;
+
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            layer_invec <= '0;
+        end else begin
+             for (i = 0; i < N_IN; i++) begin
+                if (cur_layer == 0)
+                    // sign-extend input data to ACC_W
+                    layer_invec[(i+1)*ACC_W-1 -: ACC_W]
+                        <= {{(ACC_W-DATA_W){invec_bus[(i+1)*DATA_W-1]}},
+                        invec_bus[(i+1)*DATA_W-1 -: DATA_W]};
+                else if (i < N_HIDDEN)
+                    // Use full-precision stored activation
+                    layer_invec[(i+1)*ACC_W-1 -: ACC_W]
+                    <= act_mem[cur_layer-1][i];
+                else
+                    layer_invec[(i+1)*ACC_W-1 -: ACC_W] <= '0;
+            end
+        end
+    end
+
+
+
     // Hidden-layer weight memory
      
     wmem_hidden #(
         .DATA_W   (DATA_W),
         .N_IN     (N_IN),
-        .N_HIDDEN (N_HIDDEN)
+        .N_HIDDEN (N_HIDDEN),
+        .N_LAYERS (N_LAYERS)
     ) u_wmem_hidden (
         .clk      (clk),
         .rst_n    (rst_n),
         .w_wr_en  (w_wr_en),
+        .w_addr_l (w_addr_l),
         .w_addr_h (w_addr_h),
         .w_addr_i (w_addr_i),
         .w_data   (w_data),
@@ -105,7 +143,54 @@ module bitserial_nn #(
 
      
     // MAC Engine (AXI backpressure)
-     
+
+    logic start_compute_req;
+    logic mac_accept;
+    logic layer_invec_valid;
+
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n)
+            layer_invec_valid <= 1'b0;
+        // Set when input or previous layer completes
+        else if ((cur_layer == 0 && vector_done) ||
+            (cur_layer != 0 && layer_done))
+            layer_invec_valid <= 1'b1;
+
+    // Clear only when MAC accepts
+    else if (mac_accept)
+        layer_invec_valid <= 1'b0;
+    end
+
+    assign mac_accept = start_compute_req && !busy && layer_invec_valid;
+
+    /* ---------------- START COMPUTE REQUEST ---------------- */
+    always_ff @(posedge clk) begin
+        if (!rst_n)
+            start_compute_req <= 1'b0;
+
+        // Raise request
+        else if ((cur_layer == 0 && vector_done) ||
+                (cur_layer != 0 && layer_done))
+            start_compute_req <= 1'b1;
+
+        // Clear ONLY when MAC accepts it
+        else if (mac_accept)
+            start_compute_req <= 1'b0;
+    end
+
+    // Layer counter
+
+    always_ff @(posedge clk) begin
+        if (!rst_n)
+            cur_layer <= '0;
+        else if (layer_done) begin
+            if (cur_layer == N_LAYERS-1)
+                cur_layer <= '0;
+            else
+                cur_layer <= cur_layer + 1'b1;
+        end
+    end
+
     assign mac_out_ready = relu_in_ready;
 
     mac_engine #(
@@ -113,24 +198,27 @@ module bitserial_nn #(
         .PRECISION (PRECISION),
         .N_IN      (N_IN),
         .N_HIDDEN  (N_HIDDEN),
+        .N_LAYERS  (N_LAYERS),
         .P         (P)
     ) u_mac_engine (
         .clk           (clk),
         .rst_n         (rst_n),
-        .start_compute (vector_done),
-        .invec_bus     (invec_bus),
+        .layer_idx     (cur_layer),
+        .start_compute (start_compute_req),
+        .invec_bus     (layer_invec),
         .wmem_raddr    (wmem_raddr),
         .wmem_rdata    (wmem_rdata),
         .out_data      (mac_out_data),
         .out_valid     (mac_out_valid),
         .out_ready     (mac_out_ready),
+        .layer_done    (layer_done),
         .busy          (busy)
     );
 
      
     // ReLU (AXI-compliant)
      
-    assign relu_out_ready = m_axis_tready;
+    assign relu_out_ready = (cur_layer == N_LAYERS-1) ? m_axis_tready : 1'b1;
 
     relu_activation #(
         .ACC_W (ACC_W)
@@ -145,22 +233,70 @@ module bitserial_nn #(
         .in_ready  (relu_in_ready)
     );
 
+    // Store activations into activation memory
+
+    logic [$clog2((N_HIDDEN>1)?N_HIDDEN:2)-1:0] act_idx;
+
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            // Reset activation memory
+            for (l = 0; l < N_LAYERS; l++)
+                for (h = 0; h < N_HIDDEN; h++)
+                    act_mem[l][h] <= '0;
+
+            act_idx <= '0;
+        end
+
+        else begin
+        /* ---------------- RESET INDEX AT LAYER BOUNDARY ---------------- */
+        if (layer_done) begin
+            act_idx <= '0;
+        end
+
+        /* ---------------- STORE ACTIVATION ---------------- */
+        else if (relu_out_valid && relu_in_ready && cur_layer < N_LAYERS-1) begin
+            act_mem[cur_layer][act_idx] <= relu_out_data;
+
+            if (act_idx < N_HIDDEN-1)
+                act_idx <= act_idx + 1'b1;
+        end
+
+        
+    end
+    end
+
      
     // AXI OUTPUT HANDSHAKE
      
     logic [$clog2((N_HIDDEN>1)?N_HIDDEN:2)-1:0] out_idx;
 
+    /* ---------------- OUTPUT INDEX ---------------- */
     always_ff @(posedge clk) begin
-        if (!rst_n) begin
+        if (!rst_n)
             out_idx <= '0;
-        end else if (relu_out_valid && m_axis_tready) begin
-            out_idx <= (out_idx == N_HIDDEN-1) ? '0 : out_idx + 1'b1;
-        end
+
+        // reset index when starting final layer
+        else if (layer_done && cur_layer == N_LAYERS-2)
+            out_idx <= '0;
+
+        // increment only on successful transfer
+        else if (m_axis_tvalid && m_axis_tready)
+            out_idx <= out_idx + 1'b1;
     end
 
-    assign m_axis_tdata  = relu_out_data;
-    assign m_axis_tvalid = relu_out_valid;
-    assign m_axis_tlast  = (out_idx == N_HIDDEN-1) && m_axis_tvalid;
+    /* ---------------- AXI OUTPUT ---------------- */
+    assign m_axis_tdata =
+        (cur_layer == N_LAYERS-1) ? relu_out_data : '0;
+
+    assign m_axis_tvalid =
+        (cur_layer == N_LAYERS-1) && relu_out_valid;
+
+    /* ---------------- TLAST (FIXED) ---------------- */
+    assign m_axis_tlast =
+        (cur_layer == N_LAYERS-1) &&
+        (out_idx == N_HIDDEN-1) &&
+        m_axis_tvalid &&
+        m_axis_tready;
 
 `ifndef SYNTHESIS
     always_ff @(posedge clk) begin
