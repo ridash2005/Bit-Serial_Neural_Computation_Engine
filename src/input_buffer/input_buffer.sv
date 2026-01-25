@@ -50,11 +50,12 @@ module input_buffer #(
     genvar gi;
     generate
         for (gi = 0; gi < N_IN; gi++) begin : PACK
-            assign invec_bus[(gi+ gi + 1)*DATA_W-1 -: DATA_W] = inbuf[gi];
+            // Pack each DATA_W-bit word into its corresponding slot in the parallel bus
+            assign invec_bus[(gi+1)*DATA_W-1 -: DATA_W] = inbuf[gi];
         end
     endgenerate
 
-     
+     +99
     // Input buffering and vector completion logic
      
     always_ff @(posedge clk or negedge rst_n) begin
