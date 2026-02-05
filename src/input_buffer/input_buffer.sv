@@ -55,7 +55,6 @@ module input_buffer #(
         end
     endgenerate
 
-     +99
     // Input buffering and vector completion logic
      
     always_ff @(posedge clk or negedge rst_n) begin
