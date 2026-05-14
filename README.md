@@ -1,8 +1,8 @@
 # Bit-Serial Neural Computation Engine
 
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![SystemVerilog](https://img.shields.io/badge/SystemVerilog-orange.svg)](https://www.accellera.org/community/systemverilog)
-[![Vivado](https://img.shields.io/badge/tool-Vivado-E44D26.svg)](https://www.xilinx.com/products/design-tools/vivado.html)
+[![Vivado](https://img.shields.io/badge/Tool-Vivado-E44D26.svg)](https://www.xilinx.com/products/design-tools/vivado.html)
 [![Gold Winner](https://img.shields.io/badge/Hackathon--Winning--Presentation-Gold.svg)](IAC%20Hackathon%20ppt%20-%20Bitserial%20Neural%20Computation%20Engine%20.pdf)
 
 A high-efficiency, resource-optimized Neural Network Computation Engine implemented in SystemVerilog, leveraging **Bit-Serial Arithmetic** to minimize hardware footprint while maintaining high precision.
