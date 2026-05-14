@@ -1,9 +1,9 @@
 # Bit-Serial Neural Computation Engine
 
-![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)
-![Language](https://img.shields.io/badge/language-SystemVerilog-orange.svg)
-![Build](https://img.shields.io/badge/build-passing-brightgreen.svg)
-![Status](https://img.shields.io/badge/status-winning--presentation-gold.svg)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![SystemVerilog](https://img.shields.io/badge/SystemVerilog-orange.svg)](https://www.accellera.org/community/systemverilog)
+[![Vivado](https://img.shields.io/badge/tool-Vivado%202020.1+-E44D26.svg)](https://www.xilinx.com/products/design-tools/vivado.html)
+[![Gold Winner](https://img.shields.io/badge/Hackathon--Winning--Presentation-gold.svg)](IAC%20Hackathon%20ppt%20-%20Bitserial%20Neural%20Computation%20Engine%20.pdf)
 
 A high-efficiency, resource-optimized Neural Network Computation Engine implemented in SystemVerilog, leveraging **Bit-Serial Arithmetic** to minimize hardware footprint while maintaining high precision.
 
@@ -54,7 +54,7 @@ graph LR
     end
 ```
 
-For a deeper technical dive, please see [ARCHITECTURE.md](file:///d:/GitHub/my_repo/Bit-Serial_Neural_Computation_Engine/ARCHITECTURE.md).
+For a deeper technical dive, please see [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ---
 
@@ -72,18 +72,18 @@ For a deeper technical dive, please see [ARCHITECTURE.md](file:///d:/GitHub/my_r
 ---
 
 ## 🤝 Contributing
-We welcome contributions! Please see [CONTRIBUTING.md](file:///d:/GitHub/my_repo/Bit-Serial_Neural_Computation_Engine/CONTRIBUTING.md) for guidelines on how to get involved.
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to get involved.
 
 ---
 
 ## 📜 License
-This project is licensed under the **Apache License 2.0**. See the [LICENSE](file:///d:/GitHub/my_repo/Bit-Serial_Neural_Computation_Engine/LICENSE) file for details.
+This project is licensed under the **Apache License 2.0**. See the [LICENSE](LICENSE) file for details.
 
 ---
 
 ## ⭐ Credits
 *   Presented at **VLSI Hackathon, NIT Jamshedpur (Dec 2025)**.
-*   Upload includes the winning presentation: `IAC Hackathon ppt - Bitserial Neural Computation Engine (1).pdf`.
+*   Upload includes the winning presentation: [`IAC Hackathon ppt - Bitserial Neural Computation Engine .pdf`](IAC%20Hackathon%20ppt%20-%20Bitserial%20Neural%20Computation%20Engine%20.pdf).
 
 ---
 *Stay tuned for more updates and hardware implementation results!*
